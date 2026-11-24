@@ -57,7 +57,7 @@ npm run test
 npm run build
 ```
 
-CI (`.github/workflows/ci.yml`) uruchamia lint, typecheck, test i build na PR oraz pushu do `main` i `staging`. Domyślnie wszystkie zmiany idą PR-ami do `staging`; promocja `staging` → `main` tylko na wyraźne życzenie Roberta lub Konrada. Przepływ: zmiany → PR do `staging` (projekt Vercel `batumi-staging`) → po akceptacji PR `staging` → `main` (projekt `batumi-production`). Merge do `main` = publikacja produkcyjna, zatwierdza go Robert albo Konrad po jawnym potwierdzeniu w prompcie/czacie (D033, D068); runbook: `docs/SETUP.md`; Hobby = projekt hobbystyczny (D062); wygasanie hold bez crona: D063. Do publikacji treści `noindex`/brak własnej domeny. Migracje schematu są wersjonowane w `supabase/migrations`; zmiany niekompatybilne wstecz stosują expand-and-contract.
+CI (`.github/workflows/ci.yml`) uruchamia lint, typecheck, test i build na PR oraz pushu do `main` i `staging`. Domyślnie wszystkie zmiany idą PR-ami do `staging`; promocja `staging` → `main` tylko na wyraźne życzenie Roberta lub Konrada. Przepływ: zmiany → PR do `staging` (Preview Vercel: `test-sunrise-batumi.vercel.app`) → po akceptacji PR `staging` → `main` (Production: `sunrise-batumi.vercel.app`; jeden projekt Vercel). Merge do `main` = publikacja produkcyjna, zatwierdza go Robert albo Konrad po jawnym potwierdzeniu w prompcie/czacie (D033, D068); runbook: `docs/SETUP.md`; Hobby = projekt hobbystyczny (D062); wygasanie hold bez crona: D063. Do publikacji treści `noindex`/brak własnej domeny. Migracje schematu są wersjonowane w `supabase/migrations`; zmiany niekompatybilne wstecz stosują expand-and-contract.
 
 ## Zasady implementacji
 - PII nie trafia do logów.
