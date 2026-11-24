@@ -81,6 +81,19 @@ npm run lint && npm run typecheck && npm run test && npm run build
 
 Wymagany Node.js 20.9+ (CI używa 22).
 
+## 6a. Migracje bazy (Supabase)
+
+Schemat: `supabase/migrations/*.sql` (szkic wg `docs/DATA-MODEL.md`: apartament, udogodnienia, blokady, rezerwacje, `admin_profiles`; RLS włączone, brak reguł cenowych i płatności – decyzje Open; wygasanie leniwe przez `hold_expires_at`, D063). Migracje **nie są** uruchamiane automatycznie przez CI ani Vercel.
+
+Zastosowanie ręcznie przez Konrada (najpierw staging, po sprawdzeniu produkcja):
+1. `npm i -g supabase` (lub `npx supabase`), `supabase login`.
+2. `supabase link --project-ref <ref projektu staging>` → `supabase db push`.
+3. Sprawdź w Dashboard → Table Editor, że tabele istnieją i mają włączone RLS.
+4. Po akceptacji powtórz dla projektu produkcyjnego (`supabase link --project-ref <ref produkcji>` → `supabase db push`).
+5. Klucze: `NEXT_PUBLIC_SUPABASE_URL` i `NEXT_PUBLIC_SUPABASE_ANON_KEY` (publiczne) oraz `SUPABASE_SERVICE_ROLE_KEY` (**tylko serwer**, bez `NEXT_PUBLIC_`) ustaw w Vercel osobno dla Production i Preview. Nigdy nie commituj wartości (D034, D057).
+
+Po zmianie schematu zaktualizuj `src/types/database.ts` (`supabase gen types typescript`) w tym samym PR.
+
 ## 7. Otwarte punkty
 
 D064 (pauzowanie Supabase), D066 (domena). Szczegóły: `docs/DECISIONS.md`.
