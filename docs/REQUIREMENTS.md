@@ -1,8 +1,12 @@
 # Batumi – REQUIREMENTS
 
 **Status:** Baseline MVP (Faza C) + wymagania serwisu treściowo-SEO (Faza A/B), stack zatwierdzony (potwierdzenie właściciela: D027)  
-**Właściciel techniczny:** Konrad  
+**Właściciel biznesowy:** Robert (właściciel obiektu; decyzje biznesowe, dane o ofercie, zgoda na publikację)  
+**Właściciel techniczny:** Konrad (brat właściciela; konfiguracja środowiska i narzędzi; D056)  
 **Skala:** jeden apartament, około 100 rezerwacji bezpośrednich rocznie
+
+## 1a. Role decyzyjne (D056)
+W dokumentach „właściciel” oznacza Roberta, właściciela obiektu. Robert zatwierdza decyzje biznesowe i `Open` z `DECISIONS.md`, dostarcza dane do rejestru faktów i pisemnie zatwierdza publikację (D033). Konrad konfiguruje i utrzymuje środowisko projektowe (repozytorium, Vercel, Supabase, CI) oraz przygotowuje je tak, by Robert mógł je prosto rozwijać i wdrażać; nie podejmuje decyzji biznesowych ani nie zatwierdza publikacji w imieniu Roberta.
 
 ## 1. Hierarchia dokumentacji
 1. `PRODUCT.md` definiuje wizję i scope.
@@ -155,3 +159,12 @@ GA4 i Search Console (D043). Zdarzenia: kliknięcie telefonu, WhatsApp, wysłani
 
 ## 22. Proces i raportowanie
 Etapy 0–5 z bramkami GPT, dwa artefakty po etapie (ZIP + PDF) i formuła zakończenia raportu – `PROCESS.md` (D035, D036). Nowy etap startuje po akceptacji GPT i właściciela (dla decyzji biznesowych).
+
+## 23. Prostota obsługi środowiska (D059)
+Środowisko deweloperskie i wdrożeniowe ma być możliwe do obsługi przez osobę nietechniczną lub niespecjalistę (Robert) na podstawie dokumentacji na poziomie runbooka:
+- krótka instrukcja uruchomienia lokalnego i wdrożenia krok po kroku (README / `docs/RUNBOOK.md`, tworzony przez Konrada w Etapie 4),
+- jedna komenda lub jeden przycisk do typowych czynności (uruchomienie, testy, podgląd, edycja treści), bez ręcznej konfiguracji poza opisaną,
+- `.env.example` z opisem każdej zmiennej; sekrety poza repozytorium,
+- edycja treści w plikach repozytorium (D040) opisana tak, by zmianę mógł wykonać Robert i obejrzeć w Vercel Preview,
+- opis rollbacku i zasad publikacji (zgoda Roberta, D033) w prostych krokach,
+- brak nowych reguł biznesowych wynikających z tego wymagania.

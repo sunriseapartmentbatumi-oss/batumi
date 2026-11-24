@@ -18,4 +18,4 @@ Skala: prawdopodobieństwo i wpływ N/Ś/W. Wartości wstępne, do przeglądu na
 | R12 | Naruszenie prywatności (analityka bez zgody, PII w logach, sekrety w repo) | Ś | W | Zgoda cookies, brak PII w logach, brak sekretów (D043, D057) | wykonawca |
 | R13 | Spam/nadużycia formularza kontaktowego | Ś | Ś | Antyspam, rate limiting | wykonawca |
 | R14 | Kolizje terminów przy równoległych kanałach (Airbnb/Booking/własne) | Ś | W | Jedno źródło prawdy kalendarza; D023/D024 | właściciel |
-| R15 | Rozjazd procesu: bramki GPT vs repo/CI, niejasny właściciel decyzji | Ś | Ś | `../PROCESS.md`, D056 | wszyscy |
+| R15 | Rozjazd procesu: bramki GPT vs repo/CI, złożoność obsługi środowiska dla właściciela | Ś | Ś | Podział ról Robert/Konrad (D056), runbook i prostota obsługi (D059) | Konrad |

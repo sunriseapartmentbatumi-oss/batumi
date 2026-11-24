@@ -1,12 +1,12 @@
 # Batumi – PROCESS
 
-Dokument operacyjny (poniżej `REQUIREMENTS.md` w hierarchii): opisuje role, etapy z bramkami, protokół raportowania i zasady publikacji. Źródło: Master Prompt v2 („Projekt strony i SEO”), uzgodniony z procesem inżynierskim repozytorium (CI, Vercel Preview). Decyzje: D025–D058 w [`DECISIONS.md`](DECISIONS.md).
+Dokument operacyjny (poniżej `REQUIREMENTS.md` w hierarchii): opisuje role, etapy z bramkami, protokół raportowania i zasady publikacji. Źródło: Master Prompt v2 („Projekt strony i SEO”), uzgodniony z procesem inżynierskim repozytorium (CI, Vercel Preview). Decyzje: D025–D059 w [`DECISIONS.md`](DECISIONS.md).
 
 ## 1. Role
 | Rola | Odpowiedzialność |
 |---|---|
-| Właściciel apartamentu | Decydent biznesowy i jedyne źródło danych o ofercie; pisemnie zatwierdza publikację produkcyjną i wszelkie wydatki. |
-| Właściciel techniczny (Konrad, wg `REQUIREMENTS.md`) | Utrzymanie repozytorium, kodu i infrastruktury. Wymaga potwierdzenia, czy jest tą samą osobą co właściciel apartamentu (D056). |
+| Właściciel apartamentu (Robert) | Decydent biznesowy i jedyne źródło danych o ofercie; rozstrzyga decyzje `Open`; pisemnie zatwierdza publikację produkcyjną i wszelkie wydatki. W dokumentach „właściciel” = Robert. |
+| Właściciel techniczny (Konrad, brat właściciela) | Konfiguracja i utrzymanie środowiska projektowego (repozytorium, CI, Vercel, Supabase) tak, by Robert mógł je prosto rozwijać i wdrażać (D056, D059). Nie zatwierdza publikacji ani decyzji biznesowych za Roberta. |
 | Wykonawca (Claude Code) | Analiza SEO, research, UX/UI, treści, implementacja, testy. Nie ogłasza końcowej akceptacji. |
 | Koordynator/audytor (ChatGPT, „GPT”) | Niezależna bramka: weryfikuje dowody, proponuje korekty, przedstawia decyzje właścicielowi. Nie jest podwykonawcą. |
 
@@ -44,6 +44,7 @@ Nie zaczynać od kodowania. Kolejno: (1) pytania blokujące do właściciela –
 ## 7. Współistnienie z procesem repozytorium
 - PR → lint/typecheck/test/build → Vercel Preview (patrz `README.md`) jest mechanizmem technicznym; bramki GPT/właściciela są bramkami decyzyjnymi. Oba obowiązują.
 - Merge do `main` **nie oznacza** automatycznej publikacji dla odbiorców: wdrożenie produkcyjne i podpięcie domeny wymaga pisemnej zgody właściciela (D033). Do czasu zgody `main` jest wdrażany wyłącznie do środowiska nieindeksowanego (noindex, bez publicznej domeny) lub produkcyjne wdrożenie jest wstrzymane w ustawieniach Vercel.
+- Zgodę wydaje Robert; Konrad wykonuje wdrożenie dopiero po niej.
 - Zgoda właściciela jest rejestrowana (data, zakres, wersja/commit) w changelogu wydania.
 
 ## 8. Rollback, backup, monitoring, po publikacji
