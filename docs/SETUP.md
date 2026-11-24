@@ -102,15 +102,14 @@ Panel: `/admin` (logowanie e-mail + hasło przez Supabase Auth, bez publicznej r
 
 **Przed pierwszym użyciem na stagingu** zastosuj obie migracje (`supabase db push`, §6a) – w tym `..._create_reservation_rpc.sql`, bez której formularz rezerwacji nie działa. Jeśli tego jeszcze nie zrobiono, zrób to teraz.
 
-Pierwszy admin (raz na środowisko):
-1. Supabase → Authentication → Users → **Add user** (e-mail + hasło, zaznacz *Auto Confirm*). W Authentication → Sign In / Providers wyłącz **Allow new users to sign up**.
-2. Supabase → SQL Editor, wklej (podmień e-mail):
+Pierwszy admin (raz na staging i raz na production): migracja `20261124150000_bootstrap_admin.sql` automatycznie nadaje rolę admina użytkownikowi o e-mailu `sunriseapartmentbatumi@gmail.com` (backfill, jeśli już istnieje, oraz trigger przy tworzeniu konta). Hasła nie ma w repozytorium.
+1. Zastosuj migracje (§6a) na danym środowisku.
+2. Supabase → Authentication → Users → **Add user** (e-mail powyżej, hasło, *Auto Confirm*) albo **Invite user** (link e-mail ustawia hasło). Trigger doda wpis w `admin_profiles`.
+3. Authentication → Sign In / Providers: wyłącz **Allow new users to sign up**.
+4. Authentication → URL Configuration: **Site URL** i **Redirect URLs** ustaw na adres środowiska (staging: `https://test-sunrise-batumi.vercel.app`, production: `https://sunrise-batumi.vercel.app`), inaczej linki z zaproszeń/resetu hasła nie zadziałają.
+5. Wejdź na `/admin/login`. Najpierw zapisz dane apartamentu (Apartament → „Utwórz apartament"); bez tego formularz rezerwacji i blokady nie zadziałają.
 
-```sql
-insert into admin_profiles (user_id)
-select id from auth.users where email = 'TWOJ_EMAIL@example.com';
-```
-3. Wejdź na `/admin/login`. Najpierw zapisz dane apartamentu (Apartament → „Utwórz apartament"); bez tego formularz rezerwacji i blokady nie zadziałają.
+Inny admin: dodaj użytkownika w Auth i wstaw wiersz ręcznie: `insert into admin_profiles (user_id) select id from auth.users where email = '...';`.
 
 ## 7. Otwarte punkty
 
