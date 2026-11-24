@@ -96,6 +96,22 @@ Druga migracja (`..._create_reservation_rpc.sql`) dodaje funkcje używane przez 
 
 Po zmianie schematu zaktualizuj `src/types/database.ts` (`supabase gen types typescript`) w tym samym PR.
 
+## 6b. Panel administracyjny i pierwszy admin
+
+Panel: `/admin` (logowanie e-mail + hasło przez Supabase Auth, bez publicznej rejestracji). Dostęp mają tylko użytkownicy z aktywnym wierszem w `admin_profiles`. Zapisy idą przez sesję zalogowanego admina i RLS (`is_admin()`); `service_role` nie jest używany w panelu.
+
+**Przed pierwszym użyciem na stagingu** zastosuj obie migracje (`supabase db push`, §6a) – w tym `..._create_reservation_rpc.sql`, bez której formularz rezerwacji nie działa. Jeśli tego jeszcze nie zrobiono, zrób to teraz.
+
+Pierwszy admin (raz na środowisko):
+1. Supabase → Authentication → Users → **Add user** (e-mail + hasło, zaznacz *Auto Confirm*). W Authentication → Sign In / Providers wyłącz **Allow new users to sign up**.
+2. Supabase → SQL Editor, wklej (podmień e-mail):
+
+```sql
+insert into admin_profiles (user_id)
+select id from auth.users where email = 'TWOJ_EMAIL@example.com';
+```
+3. Wejdź na `/admin/login`. Najpierw zapisz dane apartamentu (Apartament → „Utwórz apartament"); bez tego formularz rezerwacji i blokady nie zadziałają.
+
 ## 7. Otwarte punkty
 
 D064 (pauzowanie Supabase), D066 (domena). Szczegóły: `docs/DECISIONS.md`.
