@@ -92,6 +92,8 @@ Zastosowanie ręcznie przez Konrada (najpierw staging, po sprawdzeniu produkcja)
 4. Po akceptacji powtórz dla projektu produkcyjnego (`supabase link --project-ref <ref produkcji>` → `supabase db push`).
 5. Klucze: `NEXT_PUBLIC_SUPABASE_URL` i `NEXT_PUBLIC_SUPABASE_ANON_KEY` (publiczne) oraz `SUPABASE_SERVICE_ROLE_KEY` (**tylko serwer**, bez `NEXT_PUBLIC_`) ustaw w Vercel osobno dla Production i Preview. Nigdy nie commituj wartości (D034, D057).
 
+Druga migracja (`..._create_reservation_rpc.sql`) dodaje funkcje używane przez formularz rezerwacji (tylko `service_role`). Opcjonalny e-mail: `RESEND_API_KEY`, `BOOKING_NOTIFY_EMAIL`, `BOOKING_FROM_EMAIL` w Vercel (bez nich powiadomienie jest pomijane).
+
 Po zmianie schematu zaktualizuj `src/types/database.ts` (`supabase gen types typescript`) w tym samym PR.
 
 ## 7. Otwarte punkty
