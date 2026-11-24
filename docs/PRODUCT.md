@@ -75,7 +75,7 @@ MVP obsługuje podstawową cenę za noc, ceny sezonowe, zatwierdzone opłaty obo
 `PENDING_PAYMENT`, `CONFIRMED`, `CANCELLED`, `EXPIRED`, `COMPLETED`.
 
 ## Zasady twarde produktu
-Nie wymyślamy faktów (adres, odległości, widok, standard, ceny, dostępność, opinie); brak fikcyjnych ocen; brak założeń o widoku na morze i dostępie do plaży; brak obietnic dostępności bez żywego kalendarza; domena, wydatki, publikacja produkcyjna i wiadomości do gości tylko za pisemną zgodą właściciela. Pełna lista: `REQUIREMENTS.md` §16.
+Nie wymyślamy faktów (adres, odległości, widok, standard, ceny, dostępność, opinie); brak fikcyjnych ocen; brak założeń o widoku na morze i dostępie do plaży; brak obietnic dostępności bez żywego kalendarza; domena, wydatki, publikacja produkcyjna i wiadomości do gości tylko po jawnym potwierdzeniu Roberta lub Konrada; publikację agent nigdy nie wykonuje samodzielnie. Pełna lista: `REQUIREMENTS.md` §16.
 
 ## Zatwierdzony stack
 Next.js + TypeScript + Vercel + Supabase PostgreSQL + Supabase Auth + Supabase Storage + RLS + Resend + GitHub. Operator płatności pozostaje decyzją otwartą. Stack wymaga formalnego potwierdzenia właściciela po analizie potrzeb (D027).

@@ -39,7 +39,7 @@
 | D030 | Zewnętrzne źródła cytowane z URL, datą dostępu i oceną wiarygodności; weryfikacja aktualności transportu/wjazdów/atrakcji | Accepted | SEO-CONTENT §7 |
 | D031 | Brak założeń: lokalizacja przy bulwarze ≠ widok na morze/dostęp do plaży; brak fikcyjnych opinii i ocen | Accepted | Weryfikacja mapy i trasy pieszej |
 | D032 | Brak obietnic dostępności bez aktualnego kalendarza | Accepted | Spójne z D007 (źródło prawdy dostępności = PostgreSQL w Fazie C) |
-| D033 | Publikacja produkcyjna i podpięcie domeny wyłącznie po pisemnej zgodzie właściciela (Roberta); merge do `main` nie jest zgodą | Accepted | Konflikt: README „merge do main = deployment produkcyjny” vs Master Prompt. Rozstrzygnięcie: wdrożenia z `main` są wstrzymane/noindex do zgody |
+| D033 | Publikację produkcyjną i podpięcie domeny przeprowadza wyłącznie Robert albo Konrad, po jawnym potwierdzeniu w prompcie/czacie; agenci AI nigdy nie publikują samodzielnie; merge do `main` nie jest publikacją | Accepted | Konflikt: README „merge do main = deployment produkcyjny” vs Master Prompt. Rozstrzygnięcie użytkownika: potwierdzenie promptem zamiast pisemnej zgody; technicznie GitHub Actions (D060) |
 | D034 | Bez odrębnej zgody: zakup domen, wydatki, wiadomości do gości, zmiany w systemach zewnętrznych | Accepted | Dotyczy także agentów AI |
 | D035 | Proces etapów 0–5 z bramkami GPT-0..3, współistnieje z CI/Vercel Preview | Accepted | `PROCESS.md` |
 | D036 | Po każdym etapie ZIP (dla ChatGPT) + PDF (dla właściciela); raport kończy się formułą STATUS/DOWODY/PROBLEMY/DECYZJE DO GPT/DECYZJE DO WŁAŚCICIELA/NASTĘPNY ETAP | Accepted | Brak sekretów/PII/danych płatniczych w artefaktach; ZIP/PDF poza Git (D055) |
@@ -62,10 +62,12 @@
 | D053 | Przechowywanie zapytań z formularza i retencja | Open | Do czasu decyzji brak tabeli z PII (DATA-MODEL §14); powiązane z D022 |
 | D054 | Role procesu: właściciel (Robert) = decydent biznesowy i zatwierdzający publikację; Konrad = konfiguracja techniczna (D056); Claude Code = wykonawca; ChatGPT = koordynator/audytor; własny raport nie jest niezależną kontrolą | Accepted | `PROCESS.md` §1 |
 | D055 | Artefakty raportowe (ZIP/PDF) nie są commitowane do repozytorium, chyba że właściciel zdecyduje inaczej | Accepted | Ochrona przed wyciekiem danych |
-| D056 | Podział ról: Robert = właściciel obiektu (decyzje biznesowe, dane o ofercie, rozstrzyganie `Open`, pisemna zgoda na publikację D033); Konrad = brat właściciela, właściciel techniczny (konfiguracja środowiska i narzędzi dla prostego rozwoju i wdrożeń przez Roberta) | Accepted | Potwierdzone przez użytkownika; „właściciel” w Master Prompt = Robert |
+| D056 | Podział ról: Robert = właściciel obiektu (decyzje biznesowe, dane o ofercie, rozstrzyganie `Open`, jawne potwierdzenie publikacji D033, sam lub przez Konrada); Konrad = brat właściciela, właściciel techniczny (konfiguracja środowiska i narzędzi dla prostego rozwoju i wdrożeń przez Roberta; może przeprowadzić publikację po jawnym potwierdzeniu, D033) | Accepted | Potwierdzone przez użytkownika; „właściciel” w Master Prompt = Robert |
 | D057 | Brak sekretów, tokenów, PII gości i danych płatniczych w repozytorium, raportach i ZIP | Accepted | Rozszerza README (sekrety server-only) |
 | D058 | Dane strukturalne tylko zgodne z realną zawartością i wytycznymi Google; bez fałszywych ocen i obietnic rich results | Accepted | Organization/Person, BreadcrumbList, FAQPage tylko jeśli zasadne |
 | D059 | Środowisko deweloperskie i wdrożeniowe ma być proste w obsłudze dla niespecjalisty (Robert), z dokumentacją na poziomie runbooka | Accepted | REQUIREMENTS §23; bez nowych reguł biznesowych |
+| D060 | Wdrożenie produkcyjne wykonuje GitHub Actions: workflow uruchamiany ręcznie (`workflow_dispatch`) i/lub chroniony GitHub Environment `production` z required reviewerem (Robert/Konrad); samo scalenie do `main` nie wdraża na produkcję. Workflow nie jest jeszcze utworzony | Accepted | Zgodne z D033; Preview dla PR bez zmian |
+| D061 | Integracja GitHub Actions z Vercel (D002): założenie – Actions wyzwala wdrożenie produkcyjne w Vercel, a automatyczne wdrożenie produkcyjne z gałęzi `main` w integracji Git Vercel jest wyłączone | Open | Do potwierdzenia przez Konrada (sposób wywołania, sekrety w GitHub, migracje Supabase) |
 
 ## Guardrail
 Pole istniejące w schemacie nie jest równoznaczne z zatwierdzoną funkcją. Treść publiczna nie może prezentować jako obowiązującej reguły oznaczonej `Open`. Dla decyzji `Open` kod nie może wprowadzać reguły biznesowej poza neutralnym defaultem potrzebnym do działania schematu.
@@ -98,7 +100,7 @@ Pole istniejące w schemacie nie jest równoznaczne z zatwierdzoną funkcją. Tr
 | PDF: język polski | REQUIREMENTS §19 | D045 |
 | Repo: bezpośrednia rezerwacja online, hold 15 min, exclusion constraint, webhook, panel admina, Resend | Bez zmian: REQUIREMENTS §2–§10, ARCHITECTURE, DATA-MODEL; Faza C | D001–D024, D026 |
 | Repo: PLN, operator płatności Open | REQUIREMENTS §6, §11 | D008, D011, D046, D048 |
-| Repo: „merge do main = deployment produkcyjny” | README, ARCHITECTURE §8, PROCESS §7 | D033 |
+| Repo: „merge do main = deployment produkcyjny” | README, ARCHITECTURE §8, PROCESS §7 | D033, D060, D061 |
 | Repo: podstawowe SEO w MVP | rozszerzone do REQUIREMENTS §17–§19 | D039 |
 | Repo: poza MVP rozbudowany CMS | REQUIREMENTS §12 – treści w repozytorium | D040 |
 | Wymóg: prosta obsługa środowiska dla Roberta | REQUIREMENTS §23 | D059 |

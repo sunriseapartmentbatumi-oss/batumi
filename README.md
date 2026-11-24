@@ -56,7 +56,7 @@ npm run test
 npm run build
 ```
 
-Pull Request tworzy Vercel Preview. Merge do `main` uruchamia kontrolowany deployment, ale **nie jest zgodą na publikację**: wdrożenie dla odbiorców (domena, indeksowanie) wymaga pisemnej zgody właściciela (D033, `docs/PROCESS.md`); do tego czasu `noindex`/brak publicznej domeny. Migracje schematu są wersjonowane w `supabase/migrations`; zmiany niekompatybilne wstecz stosują expand-and-contract.
+Pull Request tworzy Vercel Preview. Merge do `main` uruchamia kontrolowany deployment, ale **nie jest zgodą na publikację**: publikację produkcyjną przeprowadza Robert albo Konrad po jawnym potwierdzeniu w prompcie/czacie (D033), technicznie przez bramkowany workflow GitHub Actions (`workflow_dispatch` i/lub Environment `production` z required reviewerem; D060, integracja z Vercel: D061 Open – workflow jeszcze nie istnieje); do tego czasu `noindex`/brak publicznej domeny. Migracje schematu są wersjonowane w `supabase/migrations`; zmiany niekompatybilne wstecz stosują expand-and-contract.
 
 ## Zasady implementacji
 - PII nie trafia do logów.
@@ -65,5 +65,5 @@ Pull Request tworzy Vercel Preview. Merge do `main` uruchamia kontrolowany deplo
 - PostgreSQL jest źródłem prawdy dla dostępności i concurrency.
 - Webhook operatora, nie redirect użytkownika, jest źródłem prawdy dla płatności.
 - Nie wymyślaj faktów o apartamencie; brakujące dane to `[DO POTWIERDZENIA]` (D028, D029). Brak sekretów, PII gości i artefaktów raportowych (ZIP/PDF) w repozytorium.
-- Nie kupuj domen, nie wydawaj środków, nie publikuj produkcyjnie ani nie pisz do gości bez zgody właściciela (D034).
+- Nie kupuj domen, nie wydawaj środków, nie publikuj produkcyjnie (agent nigdy sam) ani nie pisz do gości bez jawnego potwierdzenia Roberta lub Konrada (D033, D034).
 - Nie implementuj decyzji oznaczonej `Open` w `docs/DECISIONS.md` poza neutralnym defaultem dopuszczonym przez wymagania.
