@@ -4,17 +4,33 @@ import { notifyByEmail, serverClient } from "@/lib/booking/server";
 import { TBC } from "@/lib/site";
 import { logDbError, userMessage } from "@/lib/diagnostics";
 
-export type BookingState = { ok?: boolean; reference?: string; error?: string; fieldErrors?: Record<string, string> };
+export type BookingState = {
+  ok?: boolean;
+  reference?: string;
+  error?: string;
+  fieldErrors?: Record<string, string>;
+  values?: Record<string, string>;
+};
+
+const GENERIC_ERROR = "Nie udało się zapisać rezerwacji. Spróbuj ponownie później.";
+
+// Wartości do odtworzenia formularza po błędzie (React 19 czyści pola po akcji).
+function echoValues(formData: FormData): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [k, v] of formData.entries()) if (typeof v === "string" && !k.startsWith("$ACTION")) out[k] = v;
+  return out;
+}
 
 const HOLD_MINUTES = 15;
 
-export async function submitBooking(_prev: BookingState, formData: FormData): Promise<BookingState> {
+async function handle(_prev: BookingState, formData: FormData): Promise<BookingState> {
   const today = new Date().toISOString().slice(0, 10);
   const parsed = bookingSchema(today).safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};
     for (const i of parsed.error.issues) fieldErrors[String(i.path[0])] ??= i.message;
-    return { fieldErrors };
+    console.error("[validation-error]", JSON.stringify({ operation: "submitBooking", fields: Object.keys(fieldErrors) }));
+    return { error: "Popraw zaznaczone pola formularza.", fieldErrors, values: echoValues(formData) };
   }
   const db = serverClient();
   if (!db) {
@@ -23,7 +39,7 @@ export async function submitBooking(_prev: BookingState, formData: FormData): Pr
       NEXT_PUBLIC_SUPABASE_URL: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
       SUPABASE_SERVICE_ROLE_KEY: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
     }));
-    return { error: "Rezerwacje są chwilowo niedostępne (brak konfiguracji). Skontaktuj się z nami bezpośrednio." };
+    return { error: "Rezerwacje są chwilowo niedostępne (brak konfiguracji). Skontaktuj się z nami bezpośrednio.", values: echoValues(formData) };
   }
 
   const v = parsed.data;
@@ -45,11 +61,20 @@ export async function submitBooking(_prev: BookingState, formData: FormData): Pr
   });
   if (error) {
     const kind = logDbError("create_pending_reservation", error, { reference });
-    return { error: userMessage(kind) };
+    return { error: userMessage(kind), values: echoValues(formData) };
   }
   await notifyByEmail(
     `Nowa rezerwacja ${reference}`,
     `${v.first_name} ${v.last_name}, ${v.email}, ${v.phone}\n${v.check_in} – ${v.check_out}, dorośli: ${v.adults}, dzieci: ${v.children}`,
   );
   return { ok: true, reference };
+}
+
+export async function submitBooking(prev: BookingState, formData: FormData): Promise<BookingState> {
+  try {
+    return await handle(prev, formData);
+  } catch (e) {
+    console.error("[action-error]", JSON.stringify({ operation: "submitBooking", message: e instanceof Error ? e.message : String(e) }));
+    return { error: GENERIC_ERROR, values: echoValues(formData) };
+  }
 }
