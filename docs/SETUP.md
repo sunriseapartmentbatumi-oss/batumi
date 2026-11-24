@@ -8,12 +8,12 @@ Konta zakłada Konrad samodzielnie. Agent/automatyzacja nie zakłada kont, nie k
 
 | Temat | Fakt | Źródło | Decyzja |
 |---|---|---|---|
-| Vercel Hobby a użycie komercyjne | Plan Hobby wolno używać „wyłącznie do użytku osobistego lub niekomercyjnego”. Strona wynajmu jest komercyjna. | https://vercel.com/legal/terms (sekcja Hobby Plan, aktualizacja 2026-10-19) | D062 |
+| Vercel Hobby a użycie komercyjne | Plan Hobby wolno używać „wyłącznie do użytku osobistego lub niekomercyjnego”. Projekt jest na razie hobbystyczny (D062 Accepted); przy komercjalizacji wrócić do decyzji. | https://vercel.com/legal/terms (sekcja Hobby Plan, aktualizacja 2026-10-19) | D062 |
 | Vercel Hobby – limity | m.in. 1 mln wywołań funkcji, 100 GB transferu; po przekroczeniu funkcja bywa niedostępna przez 30 dni. | https://vercel.com/docs/plans/hobby, https://vercel.com/docs/limits/fair-use-guidelines | D062 |
-| Vercel Cron na Hobby | Tylko 1x dziennie, dokładność ±59 min. Hold 15 min wymaga częstszego wyzwalacza. | https://vercel.com/docs/schedules/cron-jobs/usage-and-pricing | D063 |
+| Vercel Cron na Hobby | Tylko 1x dziennie, dokładność ±59 min. Nie używamy crona: wygasanie hold leniwe przez `expires_at` (D063). | https://vercel.com/docs/schedules/cron-jobs/usage-and-pricing | D063 |
 | Supabase Free | Pauzowanie projektu po 7 dniach niskiej aktywności; ok. 500 MB bazy, 1 GB plików, 2 aktywne projekty. | https://supabase.com/docs/guides/platform/free-project-pausing, https://supabase.com/pricing | D064 |
 
-Wniosek: darmowe plany nadają się do dev/preview i testów. Przed prawdziwą publikacją komercyjną trzeba rozstrzygnąć D062–D064 (Open).
+Wniosek: projekt jest na razie hobbystyczny, więc darmowe plany wystarczają (D062, D063 Accepted). Przy komercjalizacji wróć do D062 i D064 (pauzowanie Supabase, Open).
 
 ## 1. Repozytorium i GitHub Environments
 
@@ -24,7 +24,7 @@ Wniosek: darmowe plany nadają się do dev/preview i testów. Przed prawdziwą p
 
 ## 2. Vercel (darmowe konto, projekt)
 
-1. Załóż konto na https://vercel.com (Konrad). Plan Hobby = tylko test (patrz D062).
+1. Załóż konto na https://vercel.com (Konrad). Plan Hobby wystarcza na razie (projekt hobbystyczny, D062).
 2. Add New → Project → zaimportuj repo `sunriseapartmentbatumi-oss/batumi`. Framework: Next.js (wykryje sam).
 3. **Wyłącz automatyczne wdrożenie produkcyjne z `main`**: Project → Settings → Environments → Production → Branch Tracking wyłączone (lub Settings → Git → odpowiednik; nazwa opcji może się zmieniać – potwierdź w panelu, D061). Cel: scalenie do `main` nie publikuje strony.
 4. Zbierz identyfikatory: `VERCEL_ORG_ID` i `VERCEL_PROJECT_ID` (lokalnie `npx vercel link` tworzy `.vercel/project.json` – ten katalog jest w `.gitignore`, nie commituj go) oraz token: Account Settings → Tokens → `VERCEL_TOKEN`.
@@ -84,4 +84,4 @@ Wymagany Node.js 20.9+ (CI używa 22).
 
 ## 10. Otwarte punkty
 
-D061 (integracja Actions ↔ Vercel, wyłączenie auto-deploy), D062 (Hobby vs komercja), D063 (cron), D064 (pauzowanie Supabase), D065 (osobne projekty), D066 (domena). Szczegóły: `docs/DECISIONS.md`.
+D061 (integracja Actions ↔ Vercel, wyłączenie auto-deploy), D064 (pauzowanie Supabase), D065 (osobne projekty), D066 (domena). Szczegóły: `docs/DECISIONS.md`.
