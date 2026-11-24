@@ -32,7 +32,7 @@ External
 ```
 
 ## 3. Ownership logiki
-| Odpowiedzialność | Właściciel techniczny |
+| Odpowiedzialność | Odpowiedzialny komponent techniczny |
 |---|---|
 | UI i routing | Next.js App Router |
 | Walidacja requestu | Next.js + Zod |

@@ -17,6 +17,8 @@ Dokumenty operacyjne (podległe `REQUIREMENTS.md`):
 - [`docs/PROCESS.md`](docs/PROCESS.md) – role, etapy z bramkami, raportowanie (ZIP + PDF), publikacja za zgodą.
 - [`docs/stage-0/`](docs/stage-0/) – artefakty Etapu 0 (założenia, rejestr faktów, pytania do właściciela, ryzyka, plan etapów); robocze, nienormatywne.
 
+Role (D056): Robert – właściciel obiektu, decyzje biznesowe i zgoda na publikację; Konrad – konfiguracja środowiska i narzędzi, tak by Robert mógł je prosto rozwijać i wdrażać (D059).
+
 README jest wejściem dla developera, nie źródłem nowych wymagań biznesowych.
 
 ## Lokalnie

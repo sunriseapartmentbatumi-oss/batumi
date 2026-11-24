@@ -14,7 +14,7 @@ Priorytety: **BLOKUJE** – bez odpowiedzi nie ma ostatecznych twierdzeń/publik
 9. Jurysdykcja regulaminu i polityki prywatności (PL/GE/UE) oraz kto jest administratorem danych (D049).
 10. Potwierdzenie stacku Next.js/Vercel/Supabase po analizie potrzeb (D027).
 11. Zdjęcia: materiały i prawa do ich publikacji (D052).
-12. Potwierdzenie, że publikacja produkcyjna tylko za Twoją pisemną zgodą (D033) oraz czy Ty i właściciel techniczny to ta sama osoba (D056).
+12. Potwierdzenie, że publikacja produkcyjna następuje tylko za Twoją (Roberta) pisemną zgodą (D033).
 
 ## WAŻNE
 13. Domena (posiadana czy do zakupu) i hosting; zakup tylko po Twojej zgodzie (D050).
