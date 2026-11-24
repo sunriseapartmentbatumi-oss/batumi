@@ -1,13 +1,16 @@
 # Batumi – ARCHITECTURE
 
 ## 1. Cel
-Dokument definiuje odpowiedzialności komponentów dla zatwierdzonego stacku Next.js + TypeScript + Vercel + Supabase/PostgreSQL.
+Dokument definiuje odpowiedzialności komponentów dla zatwierdzonego stacku Next.js + TypeScript + Vercel + Supabase/PostgreSQL (potwierdzenie stacku przez właściciela: D027). Jedna aplikacja obsługuje serwis treściowo-SEO (Faza A/B) i moduł rezerwacji (Faza C), patrz `PRODUCT.md`.
 
 ## 2. Widok systemu
 ```text
 Browser
   ↓ HTTPS
 Next.js / Vercel
+  ├── Content/SEO layer (strony, przewodnik, FAQ, sitemap, robots, JSON-LD)
+  ├── Consent + Analytics (GA4 po zgodzie)
+  ├── Contact form handler (Route Handler, antyspam)
   ├── Public UI
   ├── Admin UI
   ├── Server Components
@@ -23,7 +26,9 @@ Supabase
 
 External
   ├── Payment Provider (Open: Stripe / Przelewy24)
-  └── Resend
+  ├── Resend
+  ├── GA4 / Search Console (po zgodzie cookies)
+  └── WhatsApp / telefon (linki, bez integracji API)
 ```
 
 ## 3. Ownership logiki
@@ -42,7 +47,13 @@ External
 | Payment source of truth | zweryfikowany webhook |
 | E-mail | Resend |
 | Hold expiration | Vercel Cron + PostgreSQL |
-| Zdjęcia | Supabase Storage |
+| Zdjęcia | Supabase Storage (publikowane: next/image, WebP/AVIF, srcset) |
+| Treści strony i przewodnika | pliki MDX/TS w repozytorium z frontmatter (data aktualizacji, źródła, status faktów) – D040 |
+| Metadane SEO, sitemap, robots, canonical, breadcrumbs, OG | Next.js Metadata API / route handlers |
+| Dane strukturalne | komponenty JSON-LD generowane wyłącznie z potwierdzonych danych (D058) |
+| Zgoda cookies | komponent klienta + zapis wyboru w cookie pierwszej strony |
+| Analityka | GA4 ładowane warunkowo po zgodzie; zdarzenia „potwierdzona rezerwacja” emitowane po `CONFIRMED` |
+| Formularz kontaktowy | Route Handler + Zod + ochrona antyspamowa + rate limiting; wysyłka przez Resend; trwałe przechowywanie zapytań: Open (D053) |
 
 ## 4. Granice zaufania
 Przeglądarka jest niezaufana. Nie wykonuje krytycznych mutacji bez walidacji serwerowej. `SUPABASE_SERVICE_ROLE_KEY`, klucze płatności i Resend nigdy nie trafiają do klienta. Publiczny anon key wymaga skutecznego RLS.
@@ -69,10 +80,21 @@ Vercel Cron wywołuje chroniony endpoint. Endpoint uruchamia idempotentną funkc
 Production i Preview nie współdzielą sekretów ani endpointów webhook.
 
 ## 8. Deployment
-Pull Request → lint/typecheck/test/build → Vercel Preview. Merge do main → kontrolowane migracje → Vercel Production. Migracje niekompatybilne wstecz używają expand-and-contract.
+Pull Request → lint/typecheck/test/build → Vercel Preview. Merge do main → kontrolowane migracje → wdrożenie. Wdrożenie dla odbiorców (podpięta domena, indeksowanie) następuje wyłącznie po pisemnej zgodzie właściciela (D033): do tego czasu wdrożenia mają `noindex` i brak publicznej domeny albo promocja do Production jest ręczna (Vercel). Migracje niekompatybilne wstecz używają expand-and-contract.
 
 ## 9. Obserwowalność
 Minimum: błędy aplikacji, błędy webhooków, nieudane płatności, liczba wygasłych holdów oraz błędy e-mail. Nie logować PII ani payloadów zawierających dane kart.
 
-## 10. Zasady zmian
+## 10. Warstwa treści i SEO
+- Renderowanie: treści publiczne jako Server Components/statyczne (SSG/ISR), pełna treść i nawigacja dostępne bez JavaScript.
+- Każda strona definiuje `title`, `description`, `canonical`, OG i breadcrumbs z jednego modelu specyfikacji (`SEO-CONTENT.md` §3).
+- Build produkcyjny kończy się błędem, jeśli treść zawiera `[DO POTWIERDZENIA]` lub fakt o statusie innym niż `potwierdzone` (D029).
+- Strony wymagające aktualnych danych (cennik/dostępność) nie są publikowane bez źródła danych na żywo (D032, D051).
+
+## 11. Zgoda cookies i analityka
+- Skrypty niekonieczne (GA4) ładowane po zgodzie; odmowa jest równie łatwa jak akceptacja; zgodę można cofnąć.
+- Zdarzenia: `click_phone`, `click_whatsapp`, `submit_contact_form`, `begin_booking`, `booking_confirmed`. `booking_confirmed` jest wysyłane po potwierdzeniu serwerowym, nie na podstawie powrotu z operatora płatności. Parametry bez PII.
+- Search Console: weryfikacja i przesłanie sitemap dopiero po publikacji za zgodą.
+
+## 12. Zasady zmian
 Nowy komponent/integracja lub zmiana ownershipu logiki wymaga aktualizacji tego dokumentu i, jeśli jest decyzją architektoniczną, `DECISIONS.md`.

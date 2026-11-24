@@ -31,6 +31,72 @@
 | D022 | Retencja danych | Open | Wymaga dopasowania do obowiązków prawnych/księgowych |
 | D023 | Airbnb/Booking source w danych | Accepted | Tylko oznaczenie źródła ręcznie zarejestrowanej rezerwacji; nie oznacza integracji API |
 | D024 | Integracje Airbnb/Booking/channel manager | Open post-MVP | Jawnie poza MVP |
+| D025 | Zakres = suma obu źródeł: serwis treściowo-SEO + przewodnik (PL) ORAZ moduł rezerwacji bezpośrednich, w jednej aplikacji Next.js | Accepted | Konflikt: repo = tylko booking app; Master Prompt = serwis SEO/przewodnik. Rozstrzygnięcie: oba, fazowo (D026) |
+| D026 | Fazowanie: A = serwis treściowo-SEO (Etapy 0–3 + implementacja), B = kontakt i pomiar, C = rezerwacje bezpośrednie | Accepted | Ruch i wiarygodność przed płatnościami; Faza C po spełnieniu §11 i D037 |
+| D027 | Potwierdzenie stacku (D001–D006) przez właściciela po analizie potrzeb | Open | Master Prompt: stos po analizie, bez narzucania. D001–D006 zostają Accepted i obowiązują do czasu ewentualnej zmiany; wymagane jawne potwierdzenie przed Etapem 4 |
+| D028 | Zakaz zmyślania faktów (adres, odległości, widok, standard, dostępność, ceny, opinie, atrakcje, czasy dojścia, parametry) | Accepted | Master Prompt – zasada niepodlegająca negocjacji |
+| D029 | Rejestr faktów (`potwierdzone` / `hipoteza` / `wymaga_właściciela`) i znacznik `[DO POTWIERDZENIA]`; publikacja treści ze znacznikiem zablokowana | Accepted | `stage-0/rejestr_faktow.csv`; REQUIREMENTS §16 |
+| D030 | Zewnętrzne źródła cytowane z URL, datą dostępu i oceną wiarygodności; weryfikacja aktualności transportu/wjazdów/atrakcji | Accepted | SEO-CONTENT §7 |
+| D031 | Brak założeń: lokalizacja przy bulwarze ≠ widok na morze/dostęp do plaży; brak fikcyjnych opinii i ocen | Accepted | Weryfikacja mapy i trasy pieszej |
+| D032 | Brak obietnic dostępności bez aktualnego kalendarza | Accepted | Spójne z D007 (źródło prawdy dostępności = PostgreSQL w Fazie C) |
+| D033 | Publikacja produkcyjna i podpięcie domeny wyłącznie po pisemnej zgodzie właściciela; merge do `main` nie jest zgodą | Accepted | Konflikt: README „merge do main = deployment produkcyjny” vs Master Prompt. Rozstrzygnięcie: wdrożenia z `main` są wstrzymane/noindex do zgody |
+| D034 | Bez odrębnej zgody: zakup domen, wydatki, wiadomości do gości, zmiany w systemach zewnętrznych | Accepted | Dotyczy także agentów AI |
+| D035 | Proces etapów 0–5 z bramkami GPT-0..3, współistnieje z CI/Vercel Preview | Accepted | `PROCESS.md` |
+| D036 | Po każdym etapie ZIP (dla ChatGPT) + PDF (dla właściciela); raport kończy się formułą STATUS/DOWODY/PROBLEMY/DECYZJE DO GPT/DECYZJE DO WŁAŚCICIELA/NASTĘPNY ETAP | Accepted | Brak sekretów/PII/danych płatniczych w artefaktach; ZIP/PDF poza Git (D055) |
+| D037 | Kanał sprzedaży: bezpośrednia rezerwacja online / formularz / WhatsApp / telefon / zewnętrzny silnik | Open | Wymaga decyzji właściciela w Etapie 2; nie zmienia planu modułu Faza C |
+| D038 | Telefon, WhatsApp i formularz jako obsługiwana ścieżka przejściowa do czasu Fazy C | Accepted | Rezerwacja bezpośrednia z płatnością online pozostaje planowanym modułem |
+| D039 | Mapa witryny, specyfikacja stron, keyword map, research konkurencji (8–12), plan redakcyjny 20–30 tematów | Accepted | `SEO-CONTENT.md`; strony bez wartości usuwane |
+| D040 | Treści stron i przewodnika jako pliki w repozytorium (MDX/TS), bez CMS | Accepted | Zgodne z „poza MVP: rozbudowany CMS”; rewizja po Etapie 2 |
+| D041 | WCAG 2.2 AA jako cel | Accepted | |
+| D042 | Cele wydajności: dobre CWV w danych terenowych; orientacyjnie LCP ≤2,5 s, INP ≤200 ms, CLS ≤0,1 | Accepted | Raportowanie bez fałszowania wyników |
+| D043 | Analityka GA4 + Search Console, zdarzenia: telefon, WhatsApp, formularz, rozpoczęcie rezerwacji, potwierdzona rezerwacja; ładowanie po zgodzie cookies | Accepted | Włączenie po publikacji za zgodą i po polityce prywatności |
+| D044 | Macierz testów (≥3 szerokości, przeglądarki, bez JS), rollback, backup, monitoring, checklista po publikacji, 30/60/90 dni | Accepted | REQUIREMENTS §21 |
+| D045 | Język serwisu: polski; inne wersje językowe poza zakresem do osobnej decyzji | Accepted | |
+| D046 | Waluty informacyjne obok PLN (np. GEL/EUR/USD) | Open | D008 (PLN) obowiązuje dla cen dla gościa |
+| D047 | Podatki w Gruzji i podmiot prawny prowadzący wynajem | Open | Rozszerza D018; blokuje treści prawne i ostateczne twierdzenia cenowe |
+| D048 | Przydatność operatora płatności (Stripe vs Przelewy24) do rozliczeń w PLN dla obiektu w Gruzji | Open | Doprecyzowuje D011; blokuje płatności Faza C |
+| D049 | Jurysdykcja i podstawy prawne regulaminu i polityki prywatności (PL/GE/UE) | Open | Wymagane przed analityką i Fazą C |
+| D050 | Domena i hosting (posiadana/zakup, konta) | Open | Zakup tylko po zgodzie (D034) |
+| D051 | Strona `/cennik-i-dostepnosc` | Open | Tylko przy aktualizowanych danych/żywym kalendarzu |
+| D052 | Prawa do zdjęć i treści, anonimizacja materiałów | Open | Przed publikacją galerii |
+| D053 | Przechowywanie zapytań z formularza i retencja | Open | Do czasu decyzji brak tabeli z PII (DATA-MODEL §14); powiązane z D022 |
+| D054 | Role procesu: właściciel = decydent; Claude Code = wykonawca; ChatGPT = koordynator/audytor; własny raport nie jest niezależną kontrolą | Accepted | `PROCESS.md` §1 |
+| D055 | Artefakty raportowe (ZIP/PDF) nie są commitowane do repozytorium, chyba że właściciel zdecyduje inaczej | Accepted | Ochrona przed wyciekiem danych |
+| D056 | Czy właściciel techniczny (Konrad) i właściciel apartamentu to ta sama osoba; kto zatwierdza publikację | Open | `REQUIREMENTS.md` nagłówek vs Master Prompt |
+| D057 | Brak sekretów, tokenów, PII gości i danych płatniczych w repozytorium, raportach i ZIP | Accepted | Rozszerza README (sekrety server-only) |
+| D058 | Dane strukturalne tylko zgodne z realną zawartością i wytycznymi Google; bez fałszywych ocen i obietnic rich results | Accepted | Organization/Person, BreadcrumbList, FAQPage tylko jeśli zasadne |
 
 ## Guardrail
-Pole istniejące w schemacie nie jest równoznaczne z zatwierdzoną funkcją. Dla decyzji `Open` kod nie może wprowadzać reguły biznesowej poza neutralnym defaultem potrzebnym do działania schematu.
+Pole istniejące w schemacie nie jest równoznaczne z zatwierdzoną funkcją. Treść publiczna nie może prezentować jako obowiązującej reguły oznaczonej `Open`. Dla decyzji `Open` kod nie może wprowadzać reguły biznesowej poza neutralnym defaultem potrzebnym do działania schematu.
+
+## Source reconciliation (traceability)
+Źródła: **PDF** = `Batumi_Claude_Code_Master_Prompt_v2.pdf`; **Repo** = dokumenty `docs/` przed scaleniem. Konflikty i rozstrzygnięcia: D025–D058.
+
+| Wymaganie ze źródła | Gdzie w dokumentacji | Decyzje |
+|---|---|---|
+| PDF: cel – polskojęzyczny serwis jednego apartamentu, okolica bulwaru Lecha i Marii Kaczyńskich, przewodnik, proces zapytań | PRODUCT „Cel”, „Fazy produktu” | D025, D026 |
+| PDF: role (wykonawca/GPT/właściciel), GPT jako bramka | PROCESS §1 | D054 |
+| PDF: zakaz zmyślania faktów; brak założeń o widoku/plaży; brak fikcyjnych opinii | REQUIREMENTS §16.1, 16.5–16.6; PRODUCT „Zasady twarde” | D028, D031 |
+| PDF: rozróżnienie potwierdzone/hipoteza/dane od właściciela; rejestr faktów | REQUIREMENTS §16.2; `stage-0/rejestr_faktow.csv` | D029 |
+| PDF: `[DO POTWIERDZENIA]` | REQUIREMENTS §16.3; ARCHITECTURE §10 | D029 |
+| PDF: cytowanie źródeł z datą i wiarygodnością | REQUIREMENTS §16.4; SEO-CONTENT §7 | D030 |
+| PDF: brak zakupów/wydatków/publikacji/wiadomości bez zgody | REQUIREMENTS §16.7; PROCESS §5, §7 | D033, D034 |
+| PDF: Git, changelog, ryzyka, backlog; brak sekretów | PROCESS §10; `stage-0/ryzyka.md`; README | D057 |
+| PDF Etap 0: pytania BLOKUJE/WAŻNE/OPCJONALNE; 5 dokumentów | `stage-0/*`; REQUIREMENTS §11 | D035 |
+| PDF Etap 1: intencje, klastry, metryki z narzędziem/datą, 8–12 konkurentów, priorytety | SEO-CONTENT §5; REQUIREMENTS §17 | D039 |
+| PDF Etap 2: ścieżka użytkownika, kanał sprzedaży, mapa witryny, specyfikacja stron, mobilny UX, brak obietnic dostępności | SEO-CONTENT §1–§3; REQUIREMENTS §17, §19 | D037, D038, D039, D032, D051 |
+| PDF Etap 3: plan 20–30 tematów, 5 szkiców, pytania gości, przewodnik, daty aktualizacji | SEO-CONTENT §4, §6; REQUIREMENTS §17 | D039, D040 |
+| PDF Etap 4: stos po analizie | ARCHITECTURE §1; REQUIREMENTS nagłówek | D027 |
+| PDF Etap 4: semantyczny HTML, WCAG 2.2 AA, formularze/antyspam, obrazy, sitemap/robots/canonical/breadcrumbs/OG/404/przekierowania | REQUIREMENTS §18–§19; SEO-CONTENT §8 | D041 |
+| PDF Etap 4: dane strukturalne tylko realne | REQUIREMENTS §18; SEO-CONTENT §3, §8 | D058 |
+| PDF Etap 4: CWV (LCP/INP/CLS) | REQUIREMENTS §19 | D042 |
+| PDF Etap 4: GA4/Search Console, zdarzenia, zgoda cookies, prywatność | REQUIREMENTS §20; ARCHITECTURE §11; SEO-CONTENT §9 | D043, D049 |
+| PDF Etap 5: testy (3 szerokości, przeglądarki, formularze, a11y, bez JS), porównanie test/prod, publikacja za zgodą, rollback, backup, monitoring, 30/60/90 | REQUIREMENTS §21; PROCESS §7–§9; SEO-CONTENT §10 | D033, D044 |
+| PDF: protokół ZIP + PDF, formuła STATUS…NASTĘPNY ETAP, brak sekretów w ZIP | PROCESS §3–§4 | D036, D055, D057 |
+| PDF: pierwsze polecenie (pytania, harmonogram, metodologia, narzędzia, zakres Etapu 0) | PROCESS §6; `stage-0/*` | D035 |
+| PDF: język polski | REQUIREMENTS §19 | D045 |
+| Repo: bezpośrednia rezerwacja online, hold 15 min, exclusion constraint, webhook, panel admina, Resend | Bez zmian: REQUIREMENTS §2–§10, ARCHITECTURE, DATA-MODEL; Faza C | D001–D024, D026 |
+| Repo: PLN, operator płatności Open | REQUIREMENTS §6, §11 | D008, D011, D046, D048 |
+| Repo: „merge do main = deployment produkcyjny” | README, ARCHITECTURE §8, PROCESS §7 | D033 |
+| Repo: podstawowe SEO w MVP | rozszerzone do REQUIREMENTS §17–§19 | D039 |
+| Repo: poza MVP rozbudowany CMS | REQUIREMENTS §12 – treści w repozytorium | D040 |
