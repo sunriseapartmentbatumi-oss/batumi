@@ -1,7 +1,22 @@
-body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.5; }
+:root {
+  --green-900: #14532d;
+  --green-700: #166534;
+  --green-100: #dcfce7;
+  --green-50: #f0fdf4;
+  --text: #14221a;
+}
+body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.5; background: var(--green-50); color: var(--text); }
 .page { max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
-.banner { background: #fde68a; padding: 0.5rem 1rem; text-align: center; font-weight: 600; }
-nav { display: flex; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #ddd; }
+.page h1, .page h2 { color: var(--green-900); }
+.page h1 { border-bottom: 4px solid var(--green-700); padding-bottom: 0.25rem; }
+.page section { background: var(--green-100); border-left: 4px solid var(--green-700); border-radius: 6px; padding: 0.5rem 1rem; margin: 1rem 0; }
+a { color: var(--green-700); }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--green-900); outline-offset: 2px; }
+.banner { background: #fde68a; color: #422006; padding: 0.5rem 1rem; text-align: center; font-weight: 600; }
+nav { display: flex; gap: 1rem; padding: 0.75rem 1rem; background: var(--green-700); }
+nav a { color: #fff; font-weight: 600; }
 label { display: grid; gap: 0.25rem; }
 input, textarea, button { font: inherit; padding: 0.4rem; }
+button { background: var(--green-700); color: #fff; border: 0; border-radius: 4px; cursor: pointer; }
+button:hover { background: var(--green-900); }
 @media (min-width: 700px) { .page { margin-top: 3rem; } }
