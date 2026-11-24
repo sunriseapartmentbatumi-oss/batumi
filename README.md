@@ -15,6 +15,7 @@ Next.js App Router + TypeScript + Vercel + Supabase PostgreSQL/Auth/Storage/RLS 
 Dokumenty operacyjne (podległe `REQUIREMENTS.md`):
 - [`docs/SEO-CONTENT.md`](docs/SEO-CONTENT.md) – mapa witryny, specyfikacja stron, SEO, plan redakcyjny, analityka.
 - [`docs/PROCESS.md`](docs/PROCESS.md) – role, etapy z bramkami, raportowanie (ZIP + PDF), publikacja za zgodą.
+- [`docs/SETUP.md`](docs/SETUP.md) – runbook środowiska i CI/CD (konta, Environments, sekrety, wdrożenie ręczne).
 - [`docs/stage-0/`](docs/stage-0/) – artefakty Etapu 0 (założenia, rejestr faktów, pytania do właściciela, ryzyka, plan etapów); robocze, nienormatywne.
 
 Role (D056): Robert – właściciel obiektu, decyzje biznesowe i zgoda na publikację; Konrad – konfiguracja środowiska i narzędzi, tak by Robert mógł je prosto rozwijać i wdrażać (D059).
@@ -56,7 +57,7 @@ npm run test
 npm run build
 ```
 
-Pull Request tworzy Vercel Preview. Merge do `main` uruchamia kontrolowany deployment, ale **nie jest zgodą na publikację**: publikację produkcyjną przeprowadza Robert albo Konrad po jawnym potwierdzeniu w prompcie/czacie (D033), technicznie przez bramkowany workflow GitHub Actions (`workflow_dispatch` i/lub Environment `production` z required reviewerem; D060, integracja z Vercel: D061 Open – workflow jeszcze nie istnieje); do tego czasu `noindex`/brak publicznej domeny. Migracje schematu są wersjonowane w `supabase/migrations`; zmiany niekompatybilne wstecz stosują expand-and-contract.
+CI (`.github/workflows/ci.yml`) uruchamia lint, typecheck, test i build na PR i pushu do `main`. Podgląd PR: opcjonalny `deploy-preview.yml` (pomijany bez sekretów) lub integracja Git Vercel. Merge do `main` **nie wdraża** na produkcję i **nie jest zgodą na publikację**: publikację produkcyjną przeprowadza Robert albo Konrad po jawnym potwierdzeniu w prompcie/czacie (D033), technicznie przez bramkowany workflow GitHub Actions (`.github/workflows/deploy-production.yml`: `workflow_dispatch` + Environment `production` z required reviewerem; D060, D067; integracja z Vercel: D061 Open; runbook: `docs/SETUP.md`; ograniczenia darmowych planów: D062–D064); do tego czasu `noindex`/brak publicznej domeny. Migracje schematu są wersjonowane w `supabase/migrations`; zmiany niekompatybilne wstecz stosują expand-and-contract.
 
 ## Zasady implementacji
 - PII nie trafia do logów.

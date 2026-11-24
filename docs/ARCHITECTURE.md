@@ -72,6 +72,8 @@ Przeglądarka jest niezaufana. Nie wykonuje krytycznych mutacji bez walidacji se
 ## 6. Wygasanie hold
 Vercel Cron wywołuje chroniony endpoint. Endpoint uruchamia idempotentną funkcję PostgreSQL zmieniającą przeterminowane `PENDING_PAYMENT` na `EXPIRED` i zapisującą zdarzenie. Implementacja musi być bezpieczna wobec równoległego webhooka.
 
+> **Uwaga (D063):** na planie Vercel Hobby cron może działać tylko raz dziennie, więc harmonogram co 15 min wymaga Vercel Pro albo innego wyzwalacza (GitHub Actions schedule, Supabase pg_cron, wygasanie leniwe). Do rozstrzygnięcia przed fazą rezerwacji.
+
 ## 7. Środowiska
 - Local: lokalny Next.js i lokalny Supabase CLI.
 - Preview: Vercel Preview + nieprodukcyjny Supabase/secrets.
