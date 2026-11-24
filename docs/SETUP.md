@@ -22,14 +22,14 @@ Wniosek: projekt jest na razie hobbystyczny, więc darmowe plany wystarczają (D
 | Production | `batumi-production` (obecny `sunrise-batumi`, domena `sunrise-batumi.vercel.app`) | `main` | osobny projekt produkcyjny | automatyczne po merge do `main` = publikacja |
 | Staging | nowy `batumi-staging` | `staging` | osobny projekt staging | automatyczne po merge do `staging` |
 
-Przepływ: zmiany → PR/merge do `staging` → test na stagingu → PR `staging` → `main`, zatwierdzany przez Roberta lub Konrada po jawnym potwierdzeniu w prompcie/czacie (D033). Agenci AI nie mergują do `main`.
+Domyślny przepływ: **wszystkie zmiany idą PR-ami do `staging`**; promocja `staging` → `main` (publikacja) tylko na wyraźne życzenie Roberta lub Konrada. Szczegółowo: zmiany → PR do `staging` → test na stagingu → PR `staging` → `main`, zatwierdzany przez Roberta lub Konrada po jawnym potwierdzeniu w prompcie/czacie (D033). Agenci AI nie mergują do `main`.
 
 ## 2. Kroki ręczne Konrada (checklista)
 
 Nic z tego nie robi agent; żadnych kosztów bez zgody Roberta (D034).
 
 GitHub:
-- [ ] Utwórz gałąź `staging` z `main`: `git push origin main:staging`.
+- [ ] Po merge tego PR utwórz gałąź `staging` z `main`: `git push origin main:staging` (ustaw ją też jako domyślną gałąź docelową dla nowych PR, jeśli chcesz).
 - [ ] Settings → Branches → reguła dla `main`: wymagany Pull Request, min. 1 recenzent (Robert/Konrad), wymagane zielone CI (`checks`), zakaz force-push.
 - [ ] Opcjonalnie lżejsza reguła dla `staging` (wymagane CI).
 

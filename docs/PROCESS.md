@@ -43,7 +43,7 @@ Nie zaczynać od kodowania. Kolejno: (1) pytania blokujące do właściciela –
 
 ## 7. Współistnienie z procesem repozytorium
 - PR → lint/typecheck/test/build → Vercel Preview (patrz `README.md`) jest mechanizmem technicznym; bramki GPT/właściciela są bramkami decyzyjnymi. Oba obowiązują.
-- Merge do `main` **jest** publikacją produkcyjną (D068), więc wymaga jawnego potwierdzenia Roberta lub Konrada w prompcie/czacie (D033) jako zatwierdzenia PR. Wcześniej zmiany przechodzą przez `staging`. Do publikacji treści środowiska są nieindeksowane (noindex, bez własnej domeny).
+- Merge do `main` **jest** publikacją produkcyjną (D068), więc wymaga jawnego potwierdzenia Roberta lub Konrada w prompcie/czacie (D033) jako zatwierdzenia PR. Domyślnie wszystkie zmiany idą PR-ami do `staging`; promocja `staging` → `main` następuje tylko na wyraźne życzenie Roberta lub Konrada. Do publikacji treści środowiska są nieindeksowane (noindex, bez własnej domeny).
 - Publikację przeprowadza Robert albo Konrad: potwierdza jawnie w prompcie/czacie i zatwierdza/merguje PR `staging` → `main` (ochrona `main`: wymagany recenzent i zielone CI). Agenci tego nie robią (D068).
 - Potwierdzenie jest rejestrowane (data, zakres, wersja/commit) w changelogu wydania.
 
