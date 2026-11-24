@@ -2,6 +2,7 @@
 import { bookingSchema, makeReference } from "@/lib/booking/validation";
 import { notifyByEmail, serverClient } from "@/lib/booking/server";
 import { TBC } from "@/lib/site";
+import { logDbError, userMessage } from "@/lib/diagnostics";
 
 export type BookingState = { ok?: boolean; reference?: string; error?: string; fieldErrors?: Record<string, string> };
 
@@ -16,7 +17,14 @@ export async function submitBooking(_prev: BookingState, formData: FormData): Pr
     return { fieldErrors };
   }
   const db = serverClient();
-  if (!db) return { error: "Rezerwacje są chwilowo niedostępne. Skontaktuj się z nami bezpośrednio." };
+  if (!db) {
+    console.error("[config-error]", JSON.stringify({
+      operation: "submitBooking",
+      NEXT_PUBLIC_SUPABASE_URL: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
+      SUPABASE_SERVICE_ROLE_KEY: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+    }));
+    return { error: "Rezerwacje są chwilowo niedostępne (brak konfiguracji). Skontaktuj się z nami bezpośrednio." };
+  }
 
   const v = parsed.data;
   const reference = makeReference();
@@ -36,9 +44,8 @@ export async function submitBooking(_prev: BookingState, formData: FormData): Pr
     p_hold_minutes: HOLD_MINUTES,
   });
   if (error) {
-    if (error.message.includes("dates_unavailable")) return { error: "Wybrany termin jest już zajęty." };
-    if (error.message.includes("min_stay")) return { error: "Termin jest krótszy niż minimalny pobyt." };
-    return { error: "Nie udało się zapisać rezerwacji. Spróbuj ponownie później." };
+    const kind = logDbError("create_pending_reservation", error, { reference });
+    return { error: userMessage(kind) };
   }
   await notifyByEmail(
     `Nowa rezerwacja ${reference}`,

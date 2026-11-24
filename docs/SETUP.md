@@ -111,6 +111,10 @@ Pierwszy admin (raz na staging i raz na production): migracja `20261124150000_bo
 
 Inny admin: dodaj użytkownika w Auth i wstaw wiersz ręcznie: `insert into admin_profiles (user_id) select id from auth.users where email = '...';`.
 
+## 6c. Diagnostyka
+
+Gdy formularz rezerwacji zwraca błąd: zaloguj się do `/admin/diagnostyka` – pokazuje, które zmienne środowiskowe są ustawione (bez wartości), host Supabase, istnienie wiersza `properties` i funkcji z migracji, wraz z podpowiedzią naprawy. Szczegóły błędów baz danych są w logach serwera Vercel (Logs → szukaj `[db-error]` lub `[config-error]`); logi nie zawierają danych gości ani kluczy.
+
 ## 7. Otwarte punkty
 
 D064 (pauzowanie Supabase), D066 (domena). Szczegóły: `docs/DECISIONS.md`.
