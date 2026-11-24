@@ -1,6 +1,6 @@
 # Batumi
 
-Aplikacja do bezpośrednich rezerwacji jednego apartamentu w Batumi.
+Polskojęzyczny serwis jednego apartamentu w Batumi: strona oferty i SEO, przewodnik turystyczny, kontakt oraz (Faza C) moduł rezerwacji bezpośrednich. Fazy: patrz `docs/PRODUCT.md`.
 
 ## Stack
 Next.js App Router + TypeScript + Vercel + Supabase PostgreSQL/Auth/Storage/RLS + Resend + GitHub. Operator płatności pozostaje otwartą decyzją.
@@ -10,7 +10,12 @@ Next.js App Router + TypeScript + Vercel + Supabase PostgreSQL/Auth/Storage/RLS 
 2. [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) – funkcjonalne source of truth.
 3. [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) – odpowiedzialności i przepływy techniczne.
 4. [`docs/DATA-MODEL.md`](docs/DATA-MODEL.md) – PostgreSQL, RLS i integralność.
-5. [`docs/DECISIONS.md`](docs/DECISIONS.md) – Accepted/Open decisions.
+5. [`docs/DECISIONS.md`](docs/DECISIONS.md) – Accepted/Open decisions oraz tabela „Source reconciliation”.
+
+Dokumenty operacyjne (podległe `REQUIREMENTS.md`):
+- [`docs/SEO-CONTENT.md`](docs/SEO-CONTENT.md) – mapa witryny, specyfikacja stron, SEO, plan redakcyjny, analityka.
+- [`docs/PROCESS.md`](docs/PROCESS.md) – role, etapy z bramkami, raportowanie (ZIP + PDF), publikacja za zgodą.
+- [`docs/stage-0/`](docs/stage-0/) – artefakty Etapu 0 (założenia, rejestr faktów, pytania do właściciela, ryzyka, plan etapów); robocze, nienormatywne.
 
 README jest wejściem dla developera, nie źródłem nowych wymagań biznesowych.
 
@@ -49,7 +54,7 @@ npm run test
 npm run build
 ```
 
-Pull Request tworzy Vercel Preview. Merge do `main` uruchamia kontrolowany deployment produkcyjny. Migracje schematu są wersjonowane w `supabase/migrations`; zmiany niekompatybilne wstecz stosują expand-and-contract.
+Pull Request tworzy Vercel Preview. Merge do `main` uruchamia kontrolowany deployment, ale **nie jest zgodą na publikację**: wdrożenie dla odbiorców (domena, indeksowanie) wymaga pisemnej zgody właściciela (D033, `docs/PROCESS.md`); do tego czasu `noindex`/brak publicznej domeny. Migracje schematu są wersjonowane w `supabase/migrations`; zmiany niekompatybilne wstecz stosują expand-and-contract.
 
 ## Zasady implementacji
 - PII nie trafia do logów.
@@ -57,4 +62,6 @@ Pull Request tworzy Vercel Preview. Merge do `main` uruchamia kontrolowany deplo
 - Publiczny klient nigdy nie otrzymuje `service_role`.
 - PostgreSQL jest źródłem prawdy dla dostępności i concurrency.
 - Webhook operatora, nie redirect użytkownika, jest źródłem prawdy dla płatności.
+- Nie wymyślaj faktów o apartamencie; brakujące dane to `[DO POTWIERDZENIA]` (D028, D029). Brak sekretów, PII gości i artefaktów raportowych (ZIP/PDF) w repozytorium.
+- Nie kupuj domen, nie wydawaj środków, nie publikuj produkcyjnie ani nie pisz do gości bez zgody właściciela (D034).
 - Nie implementuj decyzji oznaczonej `Open` w `docs/DECISIONS.md` poza neutralnym defaultem dopuszczonym przez wymagania.

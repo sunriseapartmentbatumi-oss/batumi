@@ -139,3 +139,9 @@ Migracje: `supabase/migrations`. Schemat jest odtwarzalny przez Supabase CLI. Po
 - powtórzony webhook jest idempotentny,
 - zmiana pricingu nie zmienia snapshotu,
 - RLS blokuje anonimowy odczyt PII i płatności.
+
+## 14. Treści, rejestr faktów i zgoda (Faza A/B)
+- **Treści przewodnika i stron** oraz **rejestr faktów** (`docs/stage-0/rejestr_faktow.csv`) są plikami w repozytorium, nie tabelami PostgreSQL (D040). Zmiana modelu na bazodanowy wymaga decyzji i aktualizacji tego dokumentu.
+- **Zgoda cookies** jest zapisywana po stronie przeglądarki (cookie pierwszej strony z wersją polityki i datą); brak tabeli w MVP, dopóki D049 nie wymaga rejestru zgód po stronie serwera.
+- **Zapytania z formularza kontaktowego** zawierają PII. Tabela (np. `contact_inquiries`) nie jest częścią schematu, dopóki D053 (przechowywanie i retencja) jest Open; do tego czasu formularz tylko wysyła e-mail przez Resend, bez trwałego zapisu i bez PII w logach.
+- Faza C: schemat z §3–§13 bez zmian.
