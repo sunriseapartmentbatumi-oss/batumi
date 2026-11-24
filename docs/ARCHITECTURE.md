@@ -15,8 +15,7 @@ Next.js / Vercel
   ├── Admin UI
   ├── Server Components
   ├── Server Actions / Route Handlers
-  ├── Payment Webhook
-  └── Vercel Cron
+  └── Payment Webhook (Faza C)
        ↓
 Supabase
   ├── PostgreSQL
@@ -46,7 +45,7 @@ External
 | Payment orchestration | Next.js server |
 | Payment source of truth | zweryfikowany webhook |
 | E-mail | Resend |
-| Hold expiration | Vercel Cron + PostgreSQL |
+| Hold expiration | leniwie w PostgreSQL (`hold_expires_at`, bez crona – D063) |
 | Zdjęcia | Supabase Storage (publikowane: next/image, WebP/AVIF, srcset) |
 | Treści strony i przewodnika | pliki MDX/TS w repozytorium z frontmatter (data aktualizacji, źródła, status faktów) – D040 |
 | Metadane SEO, sitemap, robots, canonical, breadcrumbs, OG | Next.js Metadata API / route handlers |
@@ -70,7 +69,16 @@ Przeglądarka jest niezaufana. Nie wykonuje krytycznych mutacji bez walidacji se
 9. Resend wysyła potwierdzenia.
 
 ## 6. Wygasanie hold
-Bez crona (D063). Każdy hold ma `expires_at`; rezerwacja `PENDING_PAYMENT` z `expires_at` w przeszłości jest traktowana jako wygasła. Idempotentna funkcja PostgreSQL zmienia przeterminowane `PENDING_PAYMENT` na `EXPIRED` i zapisuje zdarzenie; jest wywoływana leniwie: przy odczycie dostępności/rezerwacji, przy zapisie oraz przed utworzeniem nowej rezerwacji. Implementacja musi być bezpieczna wobec równoległego webhooka płatności. Przy wzroście ruchu można dodać harmonogram (Vercel Pro, GitHub Actions schedule lub pg_cron).
+Bez crona (D063). Każdy hold ma `hold_expires_at`; rezerwacja `pending_payment` z `hold_expires_at` w przeszłości jest traktowana jako wygasła. Idempotentna funkcja PostgreSQL zmienia przeterminowane `PENDING_PAYMENT` na `EXPIRED` i zapisuje zdarzenie; jest wywoływana leniwie: przy odczycie dostępności/rezerwacji, przy zapisie oraz przed utworzeniem nowej rezerwacji. Implementacja musi być bezpieczna wobec równoległego webhooka płatności. Przy wzroście ruchu można dodać harmonogram (Vercel Pro, GitHub Actions schedule lub pg_cron).
+
+Stan implementacji: `expire_stale_reservations()` jest wywoływana przed utworzeniem rezerwacji i w liście rezerwacji admina; `get_unavailable_ranges()` ignoruje przeterminowane holdy bez zmiany danych. RPC `create_pending_reservation(..., p_hold_minutes)` (15 min) działa w jednej transakcji i polega na constraincie `reservations_no_active_overlap`.
+
+## 6a. Stan implementacji (2026-11-24)
+- Publiczne: `/`, `/rezerwacja` (formularz bez płatności, server action + zod, zapis przez `service_role` tylko serwerowo), `sitemap.xml`, `robots.txt` (indeksacja tylko `VERCEL_ENV=production`), baner STAGING poza produkcją.
+- Admin: `/admin` (Supabase Auth, `admin_profiles`/`is_admin()`, middleware + `requireAdmin()`), apartament i udogodnienia, rezerwacje (zmiana statusu wg dozwolonych przejść), blokady, `/admin/diagnostyka`. Zapisy admina idą przez sesję użytkownika i RLS, nie przez `service_role`.
+- Migracje: `initial_schema`, `create_reservation_rpc`, `bootstrap_admin`. Typy: `src/types/database.ts` (ręcznie utrzymywane).
+- Logowanie błędów: `src/lib/diagnostics.ts` (`[db-error]`, `[validation-error]`, `[action-error]`, `[config-error]`).
+- Nie zaimplementowane: płatności i webhook (D011 Open), ceny i opłaty (decyzje Open), panel cen/zdjęć, analityka i zgoda cookies, treści z rejestru faktów.
 
 ## 7. Środowiska
 - Local: lokalny Next.js i lokalny Supabase CLI.
@@ -80,7 +88,7 @@ Bez crona (D063). Każdy hold ma `expires_at`; rezerwacja `PENDING_PAYMENT` z `e
 Production i Preview nie współdzielą sekretów ani endpointów webhook.
 
 ## 8. Deployment
-Pull Request → lint/typecheck/test/build (GitHub Actions CI). Zmiany trafiają najpierw do gałęzi `staging` (osobny projekt Vercel `batumi-staging`, Production Branch = `staging`, osobny Supabase). Po akceptacji PR `staging` → `main` (wymagany recenzent, zielone CI) merge do `main` wdraża **produkcję** (projekt Vercel `batumi-production`, obecnie `sunrise-batumi.vercel.app`). Merge do `main` = publikacja, więc zatwierdzają go wyłącznie Robert lub Konrad po jawnym potwierdzeniu w prompcie/czacie (D033, D068). Do czasu publikacji treści środowiska mają `noindex` i brak własnej domeny. Migracje niekompatybilne wstecz używają expand-and-contract.
+Pull Request → lint/typecheck/test/build (GitHub Actions CI). Jeden projekt Vercel: gałąź `staging` wdraża się jako Preview pod `test-sunrise-batumi.vercel.app` (domena przypięta do gałęzi `staging`, Preview env vars → Supabase staging). Po akceptacji PR `staging` → `main` (wymagany recenzent, zielone CI) merge do `main` wdraża **produkcję** (`sunrise-batumi.vercel.app`, Production env vars → Supabase production). Merge do `main` = publikacja, więc zatwierdzają go wyłącznie Robert lub Konrad po jawnym potwierdzeniu w prompcie/czacie (D033, D068). Do czasu publikacji treści środowiska mają `noindex` i brak własnej domeny. Migracje niekompatybilne wstecz używają expand-and-contract.
 
 ## 9. Obserwowalność
 Minimum: błędy aplikacji, błędy webhooków, nieudane płatności, liczba wygasłych holdów oraz błędy e-mail. Nie logować PII ani payloadów zawierających dane kart.
