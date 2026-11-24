@@ -1,7 +1,7 @@
 # Batumi – ARCHITECTURE
 
 ## 1. Cel
-Dokument definiuje odpowiedzialności komponentów dla zatwierdzonego stacku Next.js + TypeScript + Vercel + Supabase/PostgreSQL (potwierdzenie stacku przez właściciela: D027). Jedna aplikacja obsługuje serwis treściowo-SEO (Faza A/B) i moduł rezerwacji (Faza C), patrz `PRODUCT.md`.
+Dokument definiuje odpowiedzialności komponentów dla zatwierdzonego stacku Next.js + TypeScript + Vercel + Supabase/PostgreSQL (stack potwierdzony przez Konrada 2026-11-24: D027). Jedna aplikacja obsługuje serwis treściowo-SEO (Faza A/B) i moduł rezerwacji (Faza C), patrz `PRODUCT.md`.
 
 ## 2. Widok systemu
 ```text

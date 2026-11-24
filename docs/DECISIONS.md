@@ -33,7 +33,7 @@
 | D024 | Integracje Airbnb/Booking/channel manager | Open post-MVP | Jawnie poza MVP |
 | D025 | Zakres = suma obu źródeł: serwis treściowo-SEO + przewodnik (PL) ORAZ moduł rezerwacji bezpośrednich, w jednej aplikacji Next.js | Accepted | Konflikt: repo = tylko booking app; Master Prompt = serwis SEO/przewodnik. Rozstrzygnięcie: oba, fazowo (D026) |
 | D026 | Fazowanie: A = serwis treściowo-SEO (Etapy 0–3 + implementacja), B = kontakt i pomiar, C = rezerwacje bezpośrednie | Accepted | Ruch i wiarygodność przed płatnościami; Faza C po spełnieniu §11 i D037 |
-| D027 | Potwierdzenie stacku (D001–D006) przez właściciela po analizie potrzeb | Open | Master Prompt: stos po analizie, bez narzucania. D001–D006 zostają Accepted i obowiązują do czasu ewentualnej zmiany; wymagane jawne potwierdzenie przed Etapem 4 |
+| D027 | Potwierdzenie stacku (D001–D006) po analizie potrzeb | Accepted | Master Prompt: stos po analizie, bez narzucania. Stack Next.js/Vercel/Supabase potwierdzony przez Konrada (właściciela technicznego) 2026-11-24; D001–D006 pozostają Accepted |
 | D028 | Zakaz zmyślania faktów (adres, odległości, widok, standard, dostępność, ceny, opinie, atrakcje, czasy dojścia, parametry) | Accepted | Master Prompt – zasada niepodlegająca negocjacji |
 | D029 | Rejestr faktów (`potwierdzone` / `hipoteza` / `wymaga_właściciela`) i znacznik `[DO POTWIERDZENIA]`; publikacja treści ze znacznikiem zablokowana | Accepted | `stage-0/rejestr_faktow.csv`; REQUIREMENTS §16 |
 | D030 | Zewnętrzne źródła cytowane z URL, datą dostępu i oceną wiarygodności; weryfikacja aktualności transportu/wjazdów/atrakcji | Accepted | SEO-CONTENT §7 |

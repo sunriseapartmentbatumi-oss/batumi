@@ -1,6 +1,6 @@
 # Batumi – REQUIREMENTS
 
-**Status:** Baseline MVP (Faza C) + wymagania serwisu treściowo-SEO (Faza A/B), stack zatwierdzony (potwierdzenie właściciela: D027)  
+**Status:** Baseline MVP (Faza C) + wymagania serwisu treściowo-SEO (Faza A/B), stack zatwierdzony i potwierdzony przez Konrada 2026-11-24 (D027)  
 **Właściciel biznesowy:** Robert (właściciel obiektu; decyzje biznesowe, dane o ofercie, zgoda na publikację)  
 **Właściciel techniczny:** Konrad (brat właściciela; konfiguracja środowiska i narzędzi; D056)  
 **Skala:** jeden apartament, około 100 rezerwacji bezpośrednich rocznie
@@ -57,13 +57,12 @@ Kolizje terminów, rezerwacja stykająca się check-out/check-in, blokady admini
 
 ## 11. Decyzje blokujące
 ### Przed rozpoczęciem Fazy A (serwis treściowo-SEO, Etap 0–2)
-- potwierdzenie stacku przez właściciela po analizie potrzeb (D027),
 - kanał sprzedaży: formularz / WhatsApp / telefon / zewnętrzny silnik / rezerwacja bezpośrednia (D037),
 - dane o apartamencie do rejestru faktów: dokładny adres/pinezka, parametry, zdjęcia i prawa do nich (D052), dane kontaktowe, nazwa handlowa,
 - domena i hosting; zakup domeny tylko po zgodzie (D050),
 - podmiot prawny i podatki w Gruzji (D047) oraz jurysdykcja polityki prywatności/regulaminu (D049) – blokują treści prawne i ostateczne twierdzenia cenowe.
 
-Pełna lista pytań z priorytetami BLOKUJE/WAŻNE/OPCJONALNE: `stage-0/pytania_do_wlasciciela.md`.
+Pełna lista pytań z priorytetami BLOKUJE/WAŻNE/OPCJONALNE: `stage-0/pytania_do_wlasciciela.md` (część A – Robert, część B – Konrad).
 
 ### Przed developmentem funkcji zależnych od reguły
 - maksymalna liczba gości,
