@@ -1,7 +1,7 @@
 # Batumi – ARCHITECTURE
 
 ## 1. Cel
-Dokument definiuje odpowiedzialności komponentów dla zatwierdzonego stacku Next.js + TypeScript + Vercel + Supabase/PostgreSQL (potwierdzenie stacku przez właściciela: D027). Jedna aplikacja obsługuje serwis treściowo-SEO (Faza A/B) i moduł rezerwacji (Faza C), patrz `PRODUCT.md`.
+Dokument definiuje odpowiedzialności komponentów dla zatwierdzonego stacku Next.js + TypeScript + Vercel + Supabase/PostgreSQL (stack potwierdzony przez Konrada 2026-11-24: D027). Jedna aplikacja obsługuje serwis treściowo-SEO (Faza A/B) i moduł rezerwacji (Faza C), patrz `PRODUCT.md`.
 
 ## 2. Widok systemu
 ```text
@@ -32,7 +32,7 @@ External
 ```
 
 ## 3. Ownership logiki
-| Odpowiedzialność | Właściciel techniczny |
+| Odpowiedzialność | Odpowiedzialny komponent techniczny |
 |---|---|
 | UI i routing | Next.js App Router |
 | Walidacja requestu | Next.js + Zod |
@@ -80,7 +80,7 @@ Vercel Cron wywołuje chroniony endpoint. Endpoint uruchamia idempotentną funkc
 Production i Preview nie współdzielą sekretów ani endpointów webhook.
 
 ## 8. Deployment
-Pull Request → lint/typecheck/test/build → Vercel Preview. Merge do main → kontrolowane migracje → wdrożenie. Wdrożenie dla odbiorców (podpięta domena, indeksowanie) następuje wyłącznie po pisemnej zgodzie właściciela (D033): do tego czasu wdrożenia mają `noindex` i brak publicznej domeny albo promocja do Production jest ręczna (Vercel). Migracje niekompatybilne wstecz używają expand-and-contract.
+Pull Request → lint/typecheck/test/build → Vercel Preview. Merge do main → kontrolowane migracje → wdrożenie. Wdrożenie produkcyjne (podpięta domena, indeksowanie) wykonuje bramkowany workflow GitHub Actions: uruchomienie ręczne (`workflow_dispatch`) i/lub GitHub Environment `production` z required reviewerem (Robert/Konrad), po jawnym potwierdzeniu w prompcie/czacie (D033, D060). Scalenie do `main` samo nie wdraża na produkcję. Założenie do potwierdzenia przez Konrada (D061, Open): Actions wyzwala deployment w Vercel (D002), a auto-deploy produkcyjny z `main` w integracji Git Vercel jest wyłączony. Do czasu publikacji środowiska mają `noindex` i brak publicznej domeny. Workflow nie jest jeszcze zaimplementowany. Migracje niekompatybilne wstecz używają expand-and-contract.
 
 ## 9. Obserwowalność
 Minimum: błędy aplikacji, błędy webhooków, nieudane płatności, liczba wygasłych holdów oraz błędy e-mail. Nie logować PII ani payloadów zawierających dane kart.

@@ -1,12 +1,12 @@
 # Batumi – PROCESS
 
-Dokument operacyjny (poniżej `REQUIREMENTS.md` w hierarchii): opisuje role, etapy z bramkami, protokół raportowania i zasady publikacji. Źródło: Master Prompt v2 („Projekt strony i SEO”), uzgodniony z procesem inżynierskim repozytorium (CI, Vercel Preview). Decyzje: D025–D058 w [`DECISIONS.md`](DECISIONS.md).
+Dokument operacyjny (poniżej `REQUIREMENTS.md` w hierarchii): opisuje role, etapy z bramkami, protokół raportowania i zasady publikacji. Źródło: Master Prompt v2 („Projekt strony i SEO”), uzgodniony z procesem inżynierskim repozytorium (CI, Vercel Preview). Decyzje: D025–D061 w [`DECISIONS.md`](DECISIONS.md).
 
 ## 1. Role
 | Rola | Odpowiedzialność |
 |---|---|
-| Właściciel apartamentu | Decydent biznesowy i jedyne źródło danych o ofercie; pisemnie zatwierdza publikację produkcyjną i wszelkie wydatki. |
-| Właściciel techniczny (Konrad, wg `REQUIREMENTS.md`) | Utrzymanie repozytorium, kodu i infrastruktury. Wymaga potwierdzenia, czy jest tą samą osobą co właściciel apartamentu (D056). |
+| Właściciel apartamentu (Robert) | Decydent biznesowy i jedyne źródło danych o ofercie; rozstrzyga decyzje `Open`; jawnie potwierdza publikację produkcyjną (sam lub przez Konrada) i wszelkie wydatki. W dokumentach „właściciel” = Robert. |
+| Właściciel techniczny (Konrad, brat właściciela) | Konfiguracja i utrzymanie środowiska projektowego (repozytorium, CI, Vercel, Supabase) tak, by Robert mógł je prosto rozwijać i wdrażać (D056, D059). Może przeprowadzić publikację po jawnym potwierdzeniu w prompcie/czacie (D033); nie podejmuje decyzji biznesowych za Roberta. |
 | Wykonawca (Claude Code) | Analiza SEO, research, UX/UI, treści, implementacja, testy. Nie ogłasza końcowej akceptacji. |
 | Koordynator/audytor (ChatGPT, „GPT”) | Niezależna bramka: weryfikuje dowody, proponuje korekty, przedstawia decyzje właścicielowi. Nie jest podwykonawcą. |
 
@@ -20,7 +20,7 @@ Własny raport wykonawcy nie jest niezależną kontrolą.
 | 2 Strategia/UX/architektura | Ścieżka Google→oferta→kontakt/rezerwacja, mapa witryny, makiety, komunikacja, kanał sprzedaży | spec stron wg `SEO-CONTENT.md` | GPT-2: mapa witryny, makiety, komunikacja |
 | 3 Treści i przewodnik | Plan 20–30 tematów, 5 szkiców, odpowiedzi na pytania gości | treści z datami i źródłami | GPT-3: fact-check, użyteczność, spójność oferty |
 | 4 Implementacja i SEO techniczne | Kod, a11y, wydajność, dane strukturalne, analityka | PR-y, wyniki pomiarów | review PR + raport |
-| 5 Testy, publikacja, rozwój | Testy, porównanie test/prod, rollback, backup, monitoring, 30/60/90 | raport testów, plan wdrożenia | pisemna zgoda właściciela |
+| 5 Testy, publikacja, rozwój | Testy, porównanie test/prod, rollback, backup, monitoring, 30/60/90 | raport testów, plan wdrożenia | jawne potwierdzenie publikacji (Robert lub Konrad, D033) |
 
 Następny etap nie startuje bez akceptacji GPT i – dla decyzji biznesowych – właściciela. Etapy 0–3 dotyczą Fazy A, Etap 4–5 Fazy A i późniejszych (patrz `PRODUCT.md`). Faza C (rezerwacje) ma dodatkowe bramki z `REQUIREMENTS.md` §11.
 
@@ -35,16 +35,17 @@ Każdy raport kończy się sekcjami: `STATUS` (PASS / WARUNKOWO / BLOCKED), `DOW
 
 Gdy GPT wykryje błąd: plan korekty, diff, ponowne testy, nowy ZIP/PDF.
 
-## 5. Czynności wymagające odrębnej zgody właściciela
-Bez wyraźnej (pisemnej) zgody nie wolno: kupować domen, ponosić wydatków (płatne narzędzia, hosting, reklamy), publikować na produkcji, wysyłać wiadomości do gości, zmieniać systemów zewnętrznych. Dotyczy także agentów AI. Sekretów nie przechowuje się w repozytorium ani raportach.
+## 5. Czynności wymagające odrębnego potwierdzenia (Robert lub Konrad)
+Bez jawnego potwierdzenia Roberta lub Konrada w prompcie/czacie nie wolno: kupować domen, ponosić wydatków (płatne narzędzia, hosting, reklamy), publikować na produkcji, wysyłać wiadomości do gości, zmieniać systemów zewnętrznych. Dotyczy także agentów AI – agent nigdy nie publikuje na produkcji samodzielnie. Sekretów nie przechowuje się w repozytorium ani raportach.
 
 ## 6. Pierwsze polecenie (start Etapu 0)
 Nie zaczynać od kodowania. Kolejno: (1) pytania blokujące do właściciela – `stage-0/pytania_do_wlasciciela.md`, (2) harmonogram etapów z bramkami – `stage-0/plan_etapow.md`, (3) metodologia audytu SEO i konkurencji – `SEO-CONTENT.md` §5, (4) narzędzia i ograniczenia – `stage-0/00_zalozenia.md` §5, (5) zakres Etapu 0 do akceptacji; ocena kompletności briefu.
 
 ## 7. Współistnienie z procesem repozytorium
 - PR → lint/typecheck/test/build → Vercel Preview (patrz `README.md`) jest mechanizmem technicznym; bramki GPT/właściciela są bramkami decyzyjnymi. Oba obowiązują.
-- Merge do `main` **nie oznacza** automatycznej publikacji dla odbiorców: wdrożenie produkcyjne i podpięcie domeny wymaga pisemnej zgody właściciela (D033). Do czasu zgody `main` jest wdrażany wyłącznie do środowiska nieindeksowanego (noindex, bez publicznej domeny) lub produkcyjne wdrożenie jest wstrzymane w ustawieniach Vercel.
-- Zgoda właściciela jest rejestrowana (data, zakres, wersja/commit) w changelogu wydania.
+- Merge do `main` **nie oznacza** automatycznej publikacji dla odbiorców: wdrożenie produkcyjne i podpięcie domeny wymaga jawnego potwierdzenia przez Roberta lub Konrada w prompcie/czacie (D033) i jest wykonywane przez bramkowany workflow GitHub Actions (D060). Wdrożenie z `main` bez uruchomienia tego workflow nie trafia na produkcję; do tego czasu środowiska są nieindeksowane (noindex, bez publicznej domeny).
+- Publikację przeprowadza Robert albo Konrad: osoba uruchamiająca potwierdza jawnie w prompcie/czacie, następnie uruchamia workflow `workflow_dispatch` i/lub zatwierdza wdrożenie w GitHub Environment `production` (required reviewer: Robert/Konrad, D060). Szczegóły integracji z Vercel: D061 (Open).
+- Potwierdzenie jest rejestrowane (data, zakres, wersja/commit) w changelogu wydania.
 
 ## 8. Rollback, backup, monitoring, po publikacji
 Wymagania szczegółowe: `REQUIREMENTS.md` §21. Plan rollback (Vercel promote poprzedniego deploymentu, migracje expand-and-contract), backup (PostgreSQL i Storage osobno), monitoring i checklista po publikacji (indeksacja, konwersje, formularze) są przygotowywane w Etapie 5 i zatwierdzane przed publikacją.

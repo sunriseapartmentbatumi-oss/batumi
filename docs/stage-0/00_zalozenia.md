@@ -32,7 +32,7 @@ Analiza briefu i materiałów, domeny, hostingu, konkurentów i istniejących re
 | Dostęp do Search Console / GA4 / domeny | `[DO POTWIERDZENIA]` |
 | Dostęp do kalendarzy i rezerwacji | `[DO POTWIERDZENIA]` |
 | Środowisko | repozytorium GitHub, Vercel Preview, Supabase (konta wg decyzji D050) |
-| Ograniczenia | brak zakupów, wydatków i publikacji produkcyjnej bez pisemnej zgody |
+| Ograniczenia | brak zakupów, wydatków i publikacji produkcyjnej bez jawnego potwierdzenia Roberta lub Konrada |
 
 ## 6. Bramka GPT-0
 Przekazać: ten plik, rejestr faktów, pytania, ryzyka, plan etapów. Czekać na zatwierdzenie zakresu i kolejności.

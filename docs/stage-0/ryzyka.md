@@ -8,7 +8,7 @@ Skala: prawdopodobieństwo i wpływ N/Ś/W. Wartości wstępne, do przeglądu na
 | R02 | Założenie widoku na morze lub dostępu do plaży z lokalizacji przy bulwarze | Ś | W | Weryfikacja mapy i trasy pieszej (D031) | wykonawca |
 | R03 | Nieaktualne informacje o transporcie, wjazdach, atrakcjach | W | Ś | Źródła oficjalne, data weryfikacji, cykliczny przegląd (D030) | wykonawca |
 | R04 | Obietnica dostępności/ceny bez żywego kalendarza | Ś | W | Brak obietnic bez kalendarza; `/cennik-i-dostepnosc` warunkowo (D032, D051) | właściciel |
-| R05 | Przypadkowa publikacja produkcyjna po merge do `main` | Ś | W | Wdrożenie wstrzymane/`noindex` do zgody pisemnej (D033) | wł. techniczny |
+| R05 | Przypadkowa publikacja produkcyjna po merge do `main` | Ś | W | Deploy produkcyjny tylko przez bramkowany workflow GitHub Actions po potwierdzeniu (D033, D060); do tego czasu `noindex` | Konrad |
 | R06 | Wydatki lub zakup domeny bez zgody | N | W | Zakaz bez zgody (D034) | właściciel |
 | R07 | Niezgodność prawna: podatki w Gruzji, podmiot, RODO/prywatność, regulamin | W | W | Konsultacja prawno-podatkowa (D047, D049) | właściciel |
 | R08 | Operator płatności nie obsługuje PLN dla obiektu w Gruzji | Ś | W | Weryfikacja przed Fazą C (D048) | właściciel / wykonawca |
@@ -18,4 +18,4 @@ Skala: prawdopodobieństwo i wpływ N/Ś/W. Wartości wstępne, do przeglądu na
 | R12 | Naruszenie prywatności (analityka bez zgody, PII w logach, sekrety w repo) | Ś | W | Zgoda cookies, brak PII w logach, brak sekretów (D043, D057) | wykonawca |
 | R13 | Spam/nadużycia formularza kontaktowego | Ś | Ś | Antyspam, rate limiting | wykonawca |
 | R14 | Kolizje terminów przy równoległych kanałach (Airbnb/Booking/własne) | Ś | W | Jedno źródło prawdy kalendarza; D023/D024 | właściciel |
-| R15 | Rozjazd procesu: bramki GPT vs repo/CI, niejasny właściciel decyzji | Ś | Ś | `../PROCESS.md`, D056 | wszyscy |
+| R15 | Rozjazd procesu: bramki GPT vs repo/CI, złożoność obsługi środowiska dla właściciela | Ś | Ś | Podział ról Robert/Konrad (D056), runbook i prostota obsługi (D059) | Konrad |

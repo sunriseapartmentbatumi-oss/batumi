@@ -1,8 +1,12 @@
 # Batumi – REQUIREMENTS
 
-**Status:** Baseline MVP (Faza C) + wymagania serwisu treściowo-SEO (Faza A/B), stack zatwierdzony (potwierdzenie właściciela: D027)  
-**Właściciel techniczny:** Konrad  
+**Status:** Baseline MVP (Faza C) + wymagania serwisu treściowo-SEO (Faza A/B), stack zatwierdzony i potwierdzony przez Konrada 2026-11-24 (D027)  
+**Właściciel biznesowy:** Robert (właściciel obiektu; decyzje biznesowe, dane o ofercie, zgoda na publikację)  
+**Właściciel techniczny:** Konrad (brat właściciela; konfiguracja środowiska i narzędzi; D056)  
 **Skala:** jeden apartament, około 100 rezerwacji bezpośrednich rocznie
+
+## 1a. Role decyzyjne (D056)
+W dokumentach „właściciel” oznacza Roberta, właściciela obiektu. Robert zatwierdza decyzje biznesowe i `Open` z `DECISIONS.md`, dostarcza dane do rejestru faktów. Publikację produkcyjną przeprowadza Robert albo Konrad, każdorazowo po jawnym potwierdzeniu w prompcie/czacie (D033); agenci AI nigdy nie publikują samodzielnie. Konrad konfiguruje i utrzymuje środowisko projektowe (repozytorium, Vercel, Supabase, GitHub Actions) oraz przygotowuje je tak, by Robert mógł je prosto rozwijać i wdrażać; nie podejmuje decyzji biznesowych za Roberta.
 
 ## 1. Hierarchia dokumentacji
 1. `PRODUCT.md` definiuje wizję i scope.
@@ -53,13 +57,12 @@ Kolizje terminów, rezerwacja stykająca się check-out/check-in, blokady admini
 
 ## 11. Decyzje blokujące
 ### Przed rozpoczęciem Fazy A (serwis treściowo-SEO, Etap 0–2)
-- potwierdzenie stacku przez właściciela po analizie potrzeb (D027),
 - kanał sprzedaży: formularz / WhatsApp / telefon / zewnętrzny silnik / rezerwacja bezpośrednia (D037),
 - dane o apartamencie do rejestru faktów: dokładny adres/pinezka, parametry, zdjęcia i prawa do nich (D052), dane kontaktowe, nazwa handlowa,
 - domena i hosting; zakup domeny tylko po zgodzie (D050),
 - podmiot prawny i podatki w Gruzji (D047) oraz jurysdykcja polityki prywatności/regulaminu (D049) – blokują treści prawne i ostateczne twierdzenia cenowe.
 
-Pełna lista pytań z priorytetami BLOKUJE/WAŻNE/OPCJONALNE: `stage-0/pytania_do_wlasciciela.md`.
+Pełna lista pytań z priorytetami BLOKUJE/WAŻNE/OPCJONALNE: `stage-0/pytania_do_wlasciciela.md` (część A – Robert, część B – Konrad).
 
 ### Przed developmentem funkcji zależnych od reguły
 - maksymalna liczba gości,
@@ -85,7 +88,7 @@ Nie blokują scaffoldu ani podstawowej implementacji domeny, jeśli używane są
 - treść regulaminu i polityki prywatności,
 - produkcyjna treść e-maili,
 - okres retencji danych,
-- zgoda właściciela na publikację produkcyjną (D033) i zatwierdzone treści po fact-checku (GPT-3),
+- jawne potwierdzenie publikacji produkcyjnej przez Roberta lub Konrada (D033) i zatwierdzone treści po fact-checku (GPT-3),
 - konfiguracja zgody cookies i polityka prywatności przed włączeniem analityki (D043).
 
 Aktualny status każdej decyzji znajduje się w `DECISIONS.md`.
@@ -118,7 +121,7 @@ Funkcje MVP z `PRODUCT.md` należą do Fazy C, z wyjątkiem: opisu, lokalizacji,
 4. **Cytowanie źródeł (D030).** Zewnętrzne źródło: adres URL, data dostępu, ocena wiarygodności. Informacje o transporcie, wjazdach, godzinach, cenach i atrakcjach weryfikowane na stronach oficjalnych i opatrzone datą aktualizacji treści.
 5. **Lokalizacja i dostępność (D031, D032).** Lokalizacja przy bulwarze nie implikuje widoku na morze ani bezpośredniego zejścia na plażę – wymagana weryfikacja mapy i trasy pieszej. Brak obietnic dostępności bez aktualnego, żywego kalendarza.
 6. **Opinie i oceny (D031).** Zakaz fikcyjnych opinii, sztucznych rekomendacji i fałszywych ocen (także w danych strukturalnych).
-7. **Zgoda właściciela (D034, D033).** Bez odrębnej, pisemnej zgody: zakup domeny, wydatki, publikacja produkcyjna, wiadomości do gości, zmiany w systemach zewnętrznych.
+7. **Zgoda właściciela (D034, D033).** Bez odrębnego, jawnego potwierdzenia Roberta lub Konrada w prompcie/czacie: zakup domeny, wydatki, publikacja produkcyjna, wiadomości do gości, zmiany w systemach zewnętrznych. Publikacja produkcyjna odbywa się wyłącznie przez bramkowany workflow GitHub Actions (D060); agent nigdy nie publikuje samodzielnie.
 8. **Sekrety (D057).** Brak sekretów, tokenów, danych osobowych gości i danych płatniczych w repozytorium, raportach i ZIP.
 9. **Ton treści.** Konkretnie i po polsku; wyróżnik to polski właściciel i realne informacje, nie ogólnikowe „luksusowy raj”. Bez upychania słów kluczowych; bez kopiowania tekstów konkurencji.
 
@@ -148,10 +151,19 @@ GA4 i Search Console (D043). Zdarzenia: kliknięcie telefonu, WhatsApp, wysłani
 ## 21. Testy, wydanie, utrzymanie
 - **Macierz testów:** min. 3 szerokości ekranu; przeglądarki mobilne i desktopowe; formularze, linki, indeksowanie, meta, przekierowania, a11y, SEO, obrazy, błędy konsoli i sieci; działanie bez JavaScript tam, gdzie istotne (treści i nawigacja).
 - Porównanie środowiska testowego z produkcyjnym przed publikacją.
-- **Publikacja** tylko po pisemnej zgodzie właściciela (D033).
+- **Publikacja** tylko przez Roberta lub Konrada, po jawnym potwierdzeniu w prompcie/czacie, przez bramkowany workflow GitHub Actions (D033, D060).
 - **Rollback, backup, monitoring** (PostgreSQL i Storage osobno) i checklista po publikacji (indeksacja, konwersje, formularze) przygotowane przed publikacją.
 - **30/60/90 dni:** Search Console, CTR, zapytania, rezerwacje, treści, linkowanie, sezonowość; bez gwarancji pozycji.
 - Testy z §10 pozostają obowiązkowe dla Fazy C.
 
 ## 22. Proces i raportowanie
 Etapy 0–5 z bramkami GPT, dwa artefakty po etapie (ZIP + PDF) i formuła zakończenia raportu – `PROCESS.md` (D035, D036). Nowy etap startuje po akceptacji GPT i właściciela (dla decyzji biznesowych).
+
+## 23. Prostota obsługi środowiska (D059)
+Środowisko deweloperskie i wdrożeniowe ma być możliwe do obsługi przez osobę nietechniczną lub niespecjalistę (Robert) na podstawie dokumentacji na poziomie runbooka:
+- krótka instrukcja uruchomienia lokalnego i wdrożenia krok po kroku (README / `docs/RUNBOOK.md`, tworzony przez Konrada w Etapie 4),
+- jedna komenda lub jeden przycisk do typowych czynności (uruchomienie, testy, podgląd, edycja treści), bez ręcznej konfiguracji poza opisaną,
+- `.env.example` z opisem każdej zmiennej; sekrety poza repozytorium,
+- edycja treści w plikach repozytorium (D040) opisana tak, by zmianę mógł wykonać Robert i obejrzeć w Vercel Preview,
+- opis rollbacku i zasad publikacji (jawne potwierdzenie Roberta lub Konrada, uruchomienie workflow produkcyjnego, D033, D060) w prostych krokach,
+- brak nowych reguł biznesowych wynikających z tego wymagania.
