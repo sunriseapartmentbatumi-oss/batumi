@@ -15,8 +15,7 @@ Next.js / Vercel
   ├── Admin UI
   ├── Server Components
   ├── Server Actions / Route Handlers
-  ├── Payment Webhook
-  └── Vercel Cron
+  └── Payment Webhook (Faza C)
        ↓
 Supabase
   ├── PostgreSQL
@@ -46,7 +45,7 @@ External
 | Payment orchestration | Next.js server |
 | Payment source of truth | zweryfikowany webhook |
 | E-mail | Resend |
-| Hold expiration | Vercel Cron + PostgreSQL |
+| Hold expiration | leniwie w PostgreSQL (`hold_expires_at`, bez crona – D063) |
 | Zdjęcia | Supabase Storage (publikowane: next/image, WebP/AVIF, srcset) |
 | Treści strony i przewodnika | pliki MDX/TS w repozytorium z frontmatter (data aktualizacji, źródła, status faktów) – D040 |
 | Metadane SEO, sitemap, robots, canonical, breadcrumbs, OG | Next.js Metadata API / route handlers |
@@ -70,7 +69,16 @@ Przeglądarka jest niezaufana. Nie wykonuje krytycznych mutacji bez walidacji se
 9. Resend wysyła potwierdzenia.
 
 ## 6. Wygasanie hold
-Bez crona (D063). Każdy hold ma `expires_at`; rezerwacja `PENDING_PAYMENT` z `expires_at` w przeszłości jest traktowana jako wygasła. Idempotentna funkcja PostgreSQL zmienia przeterminowane `PENDING_PAYMENT` na `EXPIRED` i zapisuje zdarzenie; jest wywoływana leniwie: przy odczycie dostępności/rezerwacji, przy zapisie oraz przed utworzeniem nowej rezerwacji. Implementacja musi być bezpieczna wobec równoległego webhooka płatności. Przy wzroście ruchu można dodać harmonogram (Vercel Pro, GitHub Actions schedule lub pg_cron).
+Bez crona (D063). Każdy hold ma `hold_expires_at`; rezerwacja `pending_payment` z `hold_expires_at` w przeszłości jest traktowana jako wygasła. Idempotentna funkcja PostgreSQL zmienia przeterminowane `PENDING_PAYMENT` na `EXPIRED` i zapisuje zdarzenie; jest wywoływana leniwie: przy odczycie dostępności/rezerwacji, przy zapisie oraz przed utworzeniem nowej rezerwacji. Implementacja musi być bezpieczna wobec równoległego webhooka płatności. Przy wzroście ruchu można dodać harmonogram (Vercel Pro, GitHub Actions schedule lub pg_cron).
+
+Stan implementacji: `expire_stale_reservations()` jest wywoływana przed utworzeniem rezerwacji i w liście rezerwacji admina; `get_unavailable_ranges()` ignoruje przeterminowane holdy bez zmiany danych. RPC `create_pending_reservation(..., p_hold_minutes)` (15 min) działa w jednej transakcji i polega na constraincie `reservations_no_active_overlap`.
+
+## 6a. Stan implementacji (2026-11-24)
+- Publiczne: `/`, `/rezerwacja` (formularz bez płatności, server action + zod, zapis przez `service_role` tylko serwerowo), `sitemap.xml`, `robots.txt` (indeksacja tylko `VERCEL_ENV=production`), baner STAGING poza produkcją.
+- Admin: `/admin` (Supabase Auth, `admin_profiles`/`is_admin()`, middleware + `requireAdmin()`), apartament i udogodnienia, rezerwacje (zmiana statusu wg dozwolonych przejść), blokady, `/admin/diagnostyka`. Zapisy admina idą przez sesję użytkownika i RLS, nie przez `service_role`.
+- Migracje: `initial_schema`, `create_reservation_rpc`, `bootstrap_admin`. Typy: `src/types/database.ts` (ręcznie utrzymywane).
+- Logowanie błędów: `src/lib/diagnostics.ts` (`[db-error]`, `[validation-error]`, `[action-error]`, `[config-error]`).
+- Nie zaimplementowane: płatności i webhook (D011 Open), ceny i opłaty (decyzje Open), panel cen/zdjęć, analityka i zgoda cookies, treści z rejestru faktów.
 
 ## 7. Środowiska
 - Local: lokalny Next.js i lokalny Supabase CLI.
