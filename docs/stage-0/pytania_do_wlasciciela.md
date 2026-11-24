@@ -43,7 +43,7 @@ Podział (D056): **Część A – Robert** (właściciel obiektu: oferta, ceny, 
 ## BLOKUJE (przed Etapem 4)
 B1. Domena: posiadana czy do zakupu, rejestrator, DNS; zakup tylko po jawnym potwierdzeniu (D034, D050).
 B2. Operator płatności: Stripe vs Przelewy24 – kwestie techniczne (waluta PLN dla obiektu w Gruzji, wymagania konta, webhooki) – przed Fazą C (D011, D048).
-B3. Wdrożenie: zmiana nazwy obecnego projektu Vercel na `batumi-production` (z `main`), nowy projekt `batumi-staging` (z `staging`), ochrona `main` (D068).
+B3. Wdrożenie: jeden projekt Vercel: `main` = Production, `staging` = Preview z domeną `test-sunrise-batumi.vercel.app`, ochrona `main` (D068).
 
 ## WAŻNE
 B4. Dostęp do Search Console i GA4 (właściciel konta, weryfikacja domeny) – konfiguracja po publikacji (D043).
