@@ -80,7 +80,7 @@ Bez crona (D063). Każdy hold ma `expires_at`; rezerwacja `PENDING_PAYMENT` z `e
 Production i Preview nie współdzielą sekretów ani endpointów webhook.
 
 ## 8. Deployment
-Pull Request → lint/typecheck/test/build → Vercel Preview. Merge do main → kontrolowane migracje → wdrożenie. Wdrożenie produkcyjne (podpięta domena, indeksowanie) wykonuje bramkowany workflow GitHub Actions: uruchomienie ręczne (`workflow_dispatch`) i/lub GitHub Environment `production` z required reviewerem (Robert/Konrad), po jawnym potwierdzeniu w prompcie/czacie (D033, D060). Scalenie do `main` samo nie wdraża na produkcję. Założenie do potwierdzenia przez Konrada (D061, Open): Actions wyzwala deployment w Vercel (D002), a auto-deploy produkcyjny z `main` w integracji Git Vercel jest wyłączony. Do czasu publikacji środowiska mają `noindex` i brak publicznej domeny. Workflow nie jest jeszcze zaimplementowany. Migracje niekompatybilne wstecz używają expand-and-contract.
+Pull Request → lint/typecheck/test/build (GitHub Actions CI). Merge do `main` → automatyczne wdrożenie na **staging** (projekt Vercel `sunrise-batumi`, Production Branch = `main`). Publikacja produkcyjna = zmergowanie `main` → `production` (PR z wymaganym recenzentem, ochrona gałęzi) przez Roberta lub Konrada po jawnym potwierdzeniu w prompcie/czacie; osobny projekt Vercel z Production Branch = `production` i osobny projekt Supabase (D033, D068). Merge do `main` samo nie publikuje. Do czasu publikacji środowiska mają `noindex` i brak własnej domeny. Migracje niekompatybilne wstecz używają expand-and-contract.
 
 ## 9. Obserwowalność
 Minimum: błędy aplikacji, błędy webhooków, nieudane płatności, liczba wygasłych holdów oraz błędy e-mail. Nie logować PII ani payloadów zawierających dane kart.

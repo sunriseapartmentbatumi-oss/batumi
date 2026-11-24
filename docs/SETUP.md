@@ -1,6 +1,6 @@
 # SETUP – uruchomienie środowiska i CI/CD (runbook)
 
-Dla: Konrad (konfiguracja), Robert (wiedza, jak to działa). Zasady: D034 (bez wydatków bez zgody), D057 (żadnych sekretów w repozytorium), D060 (produkcja tylko ręcznie przez GitHub Actions).
+Dla: Konrad (konfiguracja), Robert (wiedza, jak to działa). Zasady: D034 (bez wydatków bez zgody), D057 (żadnych sekretów w repozytorium), D068 (produkcja tylko przez merge `main` → `production`).
 
 Konta zakłada Konrad samodzielnie. Agent/automatyzacja nie zakłada kont, nie kupuje domen i nie wdraża na produkcję.
 
@@ -15,63 +15,62 @@ Konta zakłada Konrad samodzielnie. Agent/automatyzacja nie zakłada kont, nie k
 
 Wniosek: projekt jest na razie hobbystyczny, więc darmowe plany wystarczają (D062, D063 Accepted). Przy komercjalizacji wróć do D062 i D064 (pauzowanie Supabase, Open).
 
-## 1. Repozytorium i GitHub Environments
+## 1. Model środowisk (D068)
 
-1. GitHub → repo → Settings → Environments → **New environment** → `production`.
-2. W `production` włącz **Required reviewers** i dodaj Roberta i/lub Konrada. Opcjonalnie ogranicz „Deployment branches” do `main`.
-3. Utwórz też Environment `preview` (bez reviewerów) – tylko jeśli chcesz podglądy z GitHub Actions.
-4. Settings → Branches: ochrona `main` (wymagany przegląd PR i zielone CI) – zalecane.
+| Środowisko | Projekt Vercel | Gałąź | Supabase | Wdrożenie |
+|---|---|---|---|---|
+| Staging | `sunrise-batumi` (`sunrise-batumi.vercel.app`) | `main` | projekt preview/staging | automatyczne po merge do `main` |
+| Production | osobny projekt Vercel (np. `sunrise-batumi-prod`) | `production` | osobny projekt produkcyjny | po merge `main` → `production` (Robert lub Konrad, po jawnym potwierdzeniu w prompcie/czacie, D033) |
 
-## 2. Vercel (darmowe konto, projekt)
+Merge do `main` nigdy nie publikuje produkcji. Agenci AI nie mergują do `production`.
 
-1. Załóż konto na https://vercel.com (Konrad). Plan Hobby wystarcza na razie (projekt hobbystyczny, D062).
-2. Add New → Project → zaimportuj repo `sunriseapartmentbatumi-oss/batumi`. Framework: Next.js (wykryje sam).
-3. **Wyłącz automatyczne wdrożenie produkcyjne z `main`**: Project → Settings → Environments → Production → Branch Tracking wyłączone (lub Settings → Git → odpowiednik; nazwa opcji może się zmieniać – potwierdź w panelu, D061). Cel: scalenie do `main` nie publikuje strony.
-4. Zbierz identyfikatory: `VERCEL_ORG_ID` i `VERCEL_PROJECT_ID` (lokalnie `npx vercel link` tworzy `.vercel/project.json` – ten katalog jest w `.gitignore`, nie commituj go) oraz token: Account Settings → Tokens → `VERCEL_TOKEN`.
-5. Zmienne środowiskowe aplikacji (Supabase itd.) wpisz w Vercel → Settings → Environment Variables (osobno Preview i Production).
+## 2. Kroki ręczne Konrada (checklista)
 
-## 3. Sekrety GitHub
+Nic z tego nie robi agent; żadnych kosztów bez zgody Roberta (D034).
 
-GitHub → Settings → Environments → `production` → Environment secrets:
-- `VERCEL_TOKEN`
-- `VERCEL_ORG_ID`
-- `VERCEL_PROJECT_ID`
+GitHub:
+- [ ] Settings → Branches → utwórz gałąź `production` z `main` (`git push origin main:production`), jeśli nie istnieje.
+- [ ] Settings → Branches → reguła dla `production`: wymagany Pull Request, min. 1 recenzent (Robert/Konrad), wymagane zielone CI, zakaz force-push; opcjonalnie ogranicz, kto może mergować.
+- [ ] Ochrona `main`: wymagany PR i zielone CI (zalecane).
 
-Opcjonalnie te same trzy w Environment `preview`. Nigdy w kodzie, README, czacie ani PR.
+Vercel – projekt staging (istniejący):
+- [ ] Settings → Environments/Git: Production Branch = `main`.
+- [ ] Zmienne środowiskowe (staging) wskazują projekt Supabase staging.
+- [ ] Ewentualnie `noindex` zostaje do publikacji.
 
-## 4. Supabase (darmowe konta/projekty)
+Vercel – nowy projekt production:
+- [ ] Add New → Project → to samo repo `sunriseapartmentbatumi-oss/batumi`.
+- [ ] Settings → Environments → Production → Production Branch = `production` (nazwa opcji może się różnić – potwierdź w panelu).
+- [ ] Zmienne środowiskowe produkcji wskazują osobny projekt Supabase produkcyjny; oddzielne sekrety i webhooki (README, sekcja Environment).
+- [ ] Domena: zostaje `*.vercel.app`; własna domena dopiero za zgodą Roberta (D034, D066).
 
-1. https://supabase.com → New project, **dwa osobne projekty**: `batumi-preview` i `batumi-prod` (D065). Region bliski użytkownikom (decyzja Konrada).
-2. Z Project Settings → API skopiuj URL i klucze do Vercel (Preview / Production) oraz lokalnie do `.env.local` (wzór: `.env.example`).
-3. `SUPABASE_SERVICE_ROLE_KEY` jest tajny – tylko po stronie serwera, nigdy z prefiksem `NEXT_PUBLIC_`.
-4. Free pauzuje się po 7 dniach bez aktywności – projekt można wznowić w panelu (D064). Migracje: katalog `supabase/migrations` (na razie pusty).
+Supabase:
+- [ ] Dwa osobne projekty: staging i production (D065). Klucz `SUPABASE_SERVICE_ROLE_KEY` tylko po stronie serwera (bez `NEXT_PUBLIC_`).
 
-## 5. Domena
+## 3. Ostrzeżenia dot. darmowych planów (stan na 2026-11-24)
 
-- Start: darmowa subdomena `<projekt>.vercel.app` (Project → Settings → Domains). Zero kosztu.
-- Własna domena = zakup (D034, D066) – tylko za zgodą Roberta. Po zakupie: dodaj w Vercel → Domains i ustaw rekordy DNS wg podpowiedzi Vercel.
-- Darmowe domeny od zewnętrznych dostawców (darmowe TLD) są niestabilne i mogą mieć gorszą reputację w SEO/e-mailach – traktuj tylko jako notatkę, nie rekomendację.
-- Do czasu wyboru domeny strona ma `noindex` (zob. `src/app/layout.tsx`); usuń to dopiero przy zatwierdzonej publikacji.
+| Temat | Fakt | Źródło | Decyzja |
+|---|---|---|---|
+| Vercel Hobby a użycie komercyjne | Plan Hobby wolno używać „wyłącznie do użytku osobistego lub niekomercyjnego”. Projekt jest na razie hobbystyczny; przy komercjalizacji wrócić do planu/hostingu. | https://vercel.com/legal/terms (sekcja Hobby Plan, aktualizacja 2026-10-19) | D062 |
+| Vercel Hobby – limity | m.in. 1 mln wywołań funkcji, 100 GB transferu; po przekroczeniu funkcja bywa niedostępna przez 30 dni. | https://vercel.com/docs/plans/hobby, https://vercel.com/docs/limits/fair-use-guidelines | D062 |
+| Vercel Cron na Hobby | Tylko 1x dziennie. Nie używamy crona: wygasanie hold leniwe przez `expires_at`. | https://vercel.com/docs/schedules/cron-jobs/usage-and-pricing | D063 |
+| Supabase Free | Pauzowanie po 7 dniach niskiej aktywności; ok. 500 MB bazy, 1 GB plików, 2 aktywne projekty. | https://supabase.com/docs/guides/platform/free-project-pausing, https://supabase.com/pricing | D064 |
 
-## 6. CI (automatyczne)
+Uwaga: Supabase Free pozwala na 2 aktywne projekty na organizację – staging + production mieszczą się dokładnie w limicie.
 
-`.github/workflows/ci.yml` – przy każdym PR i pushu do `main`: lint, typecheck, test, build. Nie wymaga sekretów. Nie wdraża niczego.
+## 4. CI
 
-## 7. Podgląd PR (opcjonalny)
+`.github/workflows/ci.yml` – przy każdym PR i pushu do `main`: lint, typecheck, test, build. Nie wymaga sekretów i niczego nie wdraża. Wdrożeniami zajmuje się integracja Git Vercel (podgląd PR i staging).
 
-`.github/workflows/deploy-preview.yml` – wdraża podgląd tylko gdy w Environment `preview` są sekrety Vercel; bez nich krok jest pomijany. Jeśli używasz integracji Git Vercel do podglądów, wyłącz ten workflow (Actions → Deploy preview → Disable workflow).
-
-## 8. Wdrożenie produkcyjne (ręczne)
+## 5. Publikacja produkcyjna
 
 Wykonuje Robert lub Konrad, po jawnym potwierdzeniu w prompcie/czacie (D033):
-1. GitHub → Actions → **Deploy production** → Run workflow, gałąź `main`.
-2. W polu `confirm` wpisz `PUBLISH`.
-3. Wskazany reviewer zatwierdza wdrożenie w Environment `production`.
-4. Workflow sprawdza sekrety (czytelny błąd, gdy ich brak), uruchamia lint/typecheck/test i wdraża przez Vercel CLI.
+1. Otwórz PR `main` → `production` (GitHub → Pull requests → base: `production`, compare: `main`).
+2. Recenzent zatwierdza, CI jest zielone, merge.
+3. Vercel (projekt production) wdraża automatycznie z gałęzi `production`.
+4. Rollback: w Vercel → Deployments → poprzednie wdrożenie → Promote/Instant Rollback, albo revert merge na `production`.
 
-Scalenie do `main` samo w sobie **nie** wdraża na produkcję. Agenci nigdy nie uruchamiają tego workflow samodzielnie.
-
-## 9. Lokalnie
+## 6. Lokalnie
 
 ```bash
 cp .env.example .env.local   # uzupełnij lokalnie
@@ -82,6 +81,6 @@ npm run lint && npm run typecheck && npm run test && npm run build
 
 Wymagany Node.js 20.9+ (CI używa 22).
 
-## 10. Otwarte punkty
+## 7. Otwarte punkty
 
-D061 (integracja Actions ↔ Vercel, wyłączenie auto-deploy), D064 (pauzowanie Supabase), D065 (osobne projekty), D066 (domena). Szczegóły: `docs/DECISIONS.md`.
+D064 (pauzowanie Supabase), D066 (domena). Szczegóły: `docs/DECISIONS.md`.

@@ -1,6 +1,6 @@
 # Batumi – PROCESS
 
-Dokument operacyjny (poniżej `REQUIREMENTS.md` w hierarchii): opisuje role, etapy z bramkami, protokół raportowania i zasady publikacji. Źródło: Master Prompt v2 („Projekt strony i SEO”), uzgodniony z procesem inżynierskim repozytorium (CI, Vercel Preview). Decyzje: D025–D061 w [`DECISIONS.md`](DECISIONS.md).
+Dokument operacyjny (poniżej `REQUIREMENTS.md` w hierarchii): opisuje role, etapy z bramkami, protokół raportowania i zasady publikacji. Źródło: Master Prompt v2 („Projekt strony i SEO”), uzgodniony z procesem inżynierskim repozytorium (CI, Vercel Preview). Decyzje: D025–D068 w [`DECISIONS.md`](DECISIONS.md).
 
 ## 1. Role
 | Rola | Odpowiedzialność |
@@ -43,8 +43,8 @@ Nie zaczynać od kodowania. Kolejno: (1) pytania blokujące do właściciela –
 
 ## 7. Współistnienie z procesem repozytorium
 - PR → lint/typecheck/test/build → Vercel Preview (patrz `README.md`) jest mechanizmem technicznym; bramki GPT/właściciela są bramkami decyzyjnymi. Oba obowiązują.
-- Merge do `main` **nie oznacza** automatycznej publikacji dla odbiorców: wdrożenie produkcyjne i podpięcie domeny wymaga jawnego potwierdzenia przez Roberta lub Konrada w prompcie/czacie (D033) i jest wykonywane przez bramkowany workflow GitHub Actions (D060). Wdrożenie z `main` bez uruchomienia tego workflow nie trafia na produkcję; do tego czasu środowiska są nieindeksowane (noindex, bez publicznej domeny).
-- Publikację przeprowadza Robert albo Konrad: osoba uruchamiająca potwierdza jawnie w prompcie/czacie, następnie uruchamia workflow `workflow_dispatch` i/lub zatwierdza wdrożenie w GitHub Environment `production` (required reviewer: Robert/Konrad, D060). Szczegóły integracji z Vercel: D061 (Open).
+- Merge do `main` **nie oznacza** publikacji dla odbiorców: wdraża wyłącznie staging. Wdrożenie produkcyjne i podpięcie domeny wymaga jawnego potwierdzenia przez Roberta lub Konrada w prompcie/czacie (D033) i następuje przez zmergowanie `main` → `production` (D068). Do tego czasu środowiska są nieindeksowane (noindex, bez własnej domeny).
+- Publikację przeprowadza Robert albo Konrad: osoba potwierdza jawnie w prompcie/czacie, następnie merguje PR `main` → `production` (ochrona gałęzi, wymagany recenzent). Agenci tego nie robią (D068).
 - Potwierdzenie jest rejestrowane (data, zakres, wersja/commit) w changelogu wydania.
 
 ## 8. Rollback, backup, monitoring, po publikacji

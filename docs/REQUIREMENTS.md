@@ -151,7 +151,7 @@ GA4 i Search Console (D043). Zdarzenia: kliknięcie telefonu, WhatsApp, wysłani
 ## 21. Testy, wydanie, utrzymanie
 - **Macierz testów:** min. 3 szerokości ekranu; przeglądarki mobilne i desktopowe; formularze, linki, indeksowanie, meta, przekierowania, a11y, SEO, obrazy, błędy konsoli i sieci; działanie bez JavaScript tam, gdzie istotne (treści i nawigacja).
 - Porównanie środowiska testowego z produkcyjnym przed publikacją.
-- **Publikacja** tylko przez Roberta lub Konrada, po jawnym potwierdzeniu w prompcie/czacie, przez bramkowany workflow GitHub Actions (D033, D060).
+- **Publikacja** tylko przez Roberta lub Konrada, po jawnym potwierdzeniu w prompcie/czacie, przez zmergowanie `main` → `production` (D033, D068).
 - **Rollback, backup, monitoring** (PostgreSQL i Storage osobno) i checklista po publikacji (indeksacja, konwersje, formularze) przygotowane przed publikacją.
 - **30/60/90 dni:** Search Console, CTR, zapytania, rezerwacje, treści, linkowanie, sezonowość; bez gwarancji pozycji.
 - Testy z §10 pozostają obowiązkowe dla Fazy C.
@@ -165,5 +165,5 @@ Etapy 0–5 z bramkami GPT, dwa artefakty po etapie (ZIP + PDF) i formuła zako�
 - jedna komenda lub jeden przycisk do typowych czynności (uruchomienie, testy, podgląd, edycja treści), bez ręcznej konfiguracji poza opisaną,
 - `.env.example` z opisem każdej zmiennej; sekrety poza repozytorium,
 - edycja treści w plikach repozytorium (D040) opisana tak, by zmianę mógł wykonać Robert i obejrzeć w Vercel Preview,
-- opis rollbacku i zasad publikacji (jawne potwierdzenie Roberta lub Konrada, uruchomienie workflow produkcyjnego, D033, D060) w prostych krokach,
+- opis rollbacku i zasad publikacji (jawne potwierdzenie Roberta lub Konrada, merge `main` → `production`, D033, D068) w prostych krokach,
 - brak nowych reguł biznesowych wynikających z tego wymagania.
