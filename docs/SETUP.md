@@ -1,6 +1,6 @@
 # SETUP – uruchomienie środowiska i CI/CD (runbook)
 
-Dla: Konrad (konfiguracja), Robert (wiedza, jak to działa). Zasady: D034 (bez wydatków bez zgody), D057 (żadnych sekretów w repozytorium), D068 (produkcja tylko przez merge `main` → `production`).
+Dla: Konrad (konfiguracja), Robert (wiedza, jak to działa). Zasady: D034 (bez wydatków bez zgody), D057 (żadnych sekretów w repozytorium), D068 (merge do `main` = publikacja, tylko po zatwierdzeniu przez Roberta lub Konrada).
 
 Konta zakłada Konrad samodzielnie. Agent/automatyzacja nie zakłada kont, nie kupuje domen i nie wdraża na produkcję.
 
@@ -19,33 +19,35 @@ Wniosek: projekt jest na razie hobbystyczny, więc darmowe plany wystarczają (D
 
 | Środowisko | Projekt Vercel | Gałąź | Supabase | Wdrożenie |
 |---|---|---|---|---|
-| Staging | `sunrise-batumi` (`sunrise-batumi.vercel.app`) | `main` | projekt preview/staging | automatyczne po merge do `main` |
-| Production | osobny projekt Vercel (np. `sunrise-batumi-prod`) | `production` | osobny projekt produkcyjny | po merge `main` → `production` (Robert lub Konrad, po jawnym potwierdzeniu w prompcie/czacie, D033) |
+| Production | `batumi-production` (obecny `sunrise-batumi`, domena `sunrise-batumi.vercel.app`) | `main` | osobny projekt produkcyjny | automatyczne po merge do `main` = publikacja |
+| Staging | nowy `batumi-staging` | `staging` | osobny projekt staging | automatyczne po merge do `staging` |
 
-Merge do `main` nigdy nie publikuje produkcji. Agenci AI nie mergują do `production`.
+Przepływ: zmiany → PR/merge do `staging` → test na stagingu → PR `staging` → `main`, zatwierdzany przez Roberta lub Konrada po jawnym potwierdzeniu w prompcie/czacie (D033). Agenci AI nie mergują do `main`.
 
 ## 2. Kroki ręczne Konrada (checklista)
 
 Nic z tego nie robi agent; żadnych kosztów bez zgody Roberta (D034).
 
 GitHub:
-- [ ] Settings → Branches → utwórz gałąź `production` z `main` (`git push origin main:production`), jeśli nie istnieje.
-- [ ] Settings → Branches → reguła dla `production`: wymagany Pull Request, min. 1 recenzent (Robert/Konrad), wymagane zielone CI, zakaz force-push; opcjonalnie ogranicz, kto może mergować.
-- [ ] Ochrona `main`: wymagany PR i zielone CI (zalecane).
+- [ ] Utwórz gałąź `staging` z `main`: `git push origin main:staging`.
+- [ ] Settings → Branches → reguła dla `main`: wymagany Pull Request, min. 1 recenzent (Robert/Konrad), wymagane zielone CI (`checks`), zakaz force-push.
+- [ ] Opcjonalnie lżejsza reguła dla `staging` (wymagane CI).
 
-Vercel – projekt staging (istniejący):
-- [ ] Settings → Environments/Git: Production Branch = `main`.
-- [ ] Zmienne środowiskowe (staging) wskazują projekt Supabase staging.
-- [ ] Ewentualnie `noindex` zostaje do publikacji.
+Vercel – projekt produkcyjny (istniejący):
+- [ ] Settings → General → zmień nazwę na `batumi-production` (zmiana nazwy może zmienić domenę `*.vercel.app` – sprawdź i ewentualnie dodaj alias w Domains).
+- [ ] Settings → Git: Production Branch = `main`.
+- [ ] Zmienne środowiskowe wskazują projekt Supabase produkcyjny; sekrety i webhooki osobne od stagingu.
 
-Vercel – nowy projekt production:
-- [ ] Add New → Project → to samo repo `sunriseapartmentbatumi-oss/batumi`.
-- [ ] Settings → Environments → Production → Production Branch = `production` (nazwa opcji może się różnić – potwierdź w panelu).
-- [ ] Zmienne środowiskowe produkcji wskazują osobny projekt Supabase produkcyjny; oddzielne sekrety i webhooki (README, sekcja Environment).
-- [ ] Domena: zostaje `*.vercel.app`; własna domena dopiero za zgodą Roberta (D034, D066).
+Vercel – nowy projekt staging:
+- [ ] Add New → Project → to samo repo `sunriseapartmentbatumi-oss/batumi`, nazwa `batumi-staging`.
+- [ ] Settings → Git: Production Branch = `staging` (nazwa opcji może się różnić – potwierdź w panelu).
+- [ ] Zmienne środowiskowe wskazują projekt Supabase staging.
+- [ ] Zostaw `noindex`; (opcjonalnie) włącz Deployment Protection, by staging nie był publiczny.
 
 Supabase:
-- [ ] Dwa osobne projekty: staging i production (D065). Klucz `SUPABASE_SERVICE_ROLE_KEY` tylko po stronie serwera (bez `NEXT_PUBLIC_`).
+- [ ] Dwa osobne projekty: staging i production (D065). `SUPABASE_SERVICE_ROLE_KEY` tylko po stronie serwera (bez `NEXT_PUBLIC_`).
+
+Domena: zostaje `*.vercel.app`; własna domena dopiero za zgodą Roberta (D034, D066).
 
 ## 3. Ostrzeżenia dot. darmowych planów (stan na 2026-11-24)
 
@@ -60,15 +62,15 @@ Uwaga: Supabase Free pozwala na 2 aktywne projekty na organizację – staging +
 
 ## 4. CI
 
-`.github/workflows/ci.yml` – przy każdym PR i pushu do `main`: lint, typecheck, test, build. Nie wymaga sekretów i niczego nie wdraża. Wdrożeniami zajmuje się integracja Git Vercel (podgląd PR i staging).
+`.github/workflows/ci.yml` – przy każdym PR oraz pushu do `main` i `staging`: lint, typecheck, test, build. Nie wymaga sekretów i niczego nie wdraża. Wdrożeniami zajmuje się integracja Git Vercel (podgląd PR, staging z `staging`, produkcja z `main`).
 
 ## 5. Publikacja produkcyjna
 
 Wykonuje Robert lub Konrad, po jawnym potwierdzeniu w prompcie/czacie (D033):
-1. Otwórz PR `main` → `production` (GitHub → Pull requests → base: `production`, compare: `main`).
-2. Recenzent zatwierdza, CI jest zielone, merge.
-3. Vercel (projekt production) wdraża automatycznie z gałęzi `production`.
-4. Rollback: w Vercel → Deployments → poprzednie wdrożenie → Promote/Instant Rollback, albo revert merge na `production`.
+1. Zmiany zmergowane do `staging` i sprawdzone na `batumi-staging`.
+2. Otwórz PR `staging` → `main`; recenzent zatwierdza, CI jest zielone, merge.
+3. Vercel (`batumi-production`) wdraża automatycznie z `main` – to jest publikacja.
+4. Rollback: Vercel → Deployments → poprzednie wdrożenie → Instant Rollback, albo revert merge na `main`.
 
 ## 6. Lokalnie
 

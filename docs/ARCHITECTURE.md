@@ -80,7 +80,7 @@ Bez crona (D063). Każdy hold ma `expires_at`; rezerwacja `PENDING_PAYMENT` z `e
 Production i Preview nie współdzielą sekretów ani endpointów webhook.
 
 ## 8. Deployment
-Pull Request → lint/typecheck/test/build (GitHub Actions CI). Merge do `main` → automatyczne wdrożenie na **staging** (projekt Vercel `sunrise-batumi`, Production Branch = `main`). Publikacja produkcyjna = zmergowanie `main` → `production` (PR z wymaganym recenzentem, ochrona gałęzi) przez Roberta lub Konrada po jawnym potwierdzeniu w prompcie/czacie; osobny projekt Vercel z Production Branch = `production` i osobny projekt Supabase (D033, D068). Merge do `main` samo nie publikuje. Do czasu publikacji środowiska mają `noindex` i brak własnej domeny. Migracje niekompatybilne wstecz używają expand-and-contract.
+Pull Request → lint/typecheck/test/build (GitHub Actions CI). Zmiany trafiają najpierw do gałęzi `staging` (osobny projekt Vercel `batumi-staging`, Production Branch = `staging`, osobny Supabase). Po akceptacji PR `staging` → `main` (wymagany recenzent, zielone CI) merge do `main` wdraża **produkcję** (projekt Vercel `batumi-production`, obecnie `sunrise-batumi.vercel.app`). Merge do `main` = publikacja, więc zatwierdzają go wyłącznie Robert lub Konrad po jawnym potwierdzeniu w prompcie/czacie (D033, D068). Do czasu publikacji treści środowiska mają `noindex` i brak własnej domeny. Migracje niekompatybilne wstecz używają expand-and-contract.
 
 ## 9. Obserwowalność
 Minimum: błędy aplikacji, błędy webhooków, nieudane płatności, liczba wygasłych holdów oraz błędy e-mail. Nie logować PII ani payloadów zawierających dane kart.

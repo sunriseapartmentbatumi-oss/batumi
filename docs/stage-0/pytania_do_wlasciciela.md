@@ -36,14 +36,14 @@ Podział (D056): **Część A – Robert** (właściciel obiektu: oferta, ceny, 
 
 ## Zamknięte
 - ~~Potwierdzenie stacku Next.js/Vercel/Supabase~~ – potwierdził Konrad, 2026-11-24 (D027).
-- ~~Tryb publikacji~~ – publikację robi Robert lub Konrad, potwierdzenie promptem, merge `main` → `production` (D033, D068).
+- ~~Tryb publikacji~~ – publikację robi Robert lub Konrad, potwierdzenie promptem, merge PR do `main` (D033, D068).
 
 # Część B – pytania/zadania techniczne Konrada
 
 ## BLOKUJE (przed Etapem 4)
 B1. Domena: posiadana czy do zakupu, rejestrator, DNS; zakup tylko po jawnym potwierdzeniu (D034, D050).
 B2. Operator płatności: Stripe vs Przelewy24 – kwestie techniczne (waluta PLN dla obiektu w Gruzji, wymagania konta, webhooki) – przed Fazą C (D011, D048).
-B3. Wdrożenie: drugi projekt Vercel (production) z Production Branch = `production`, ochrona gałęzi `production`, staging z `main` (D068).
+B3. Wdrożenie: zmiana nazwy obecnego projektu Vercel na `batumi-production` (z `main`), nowy projekt `batumi-staging` (z `staging`), ochrona `main` (D068).
 
 ## WAŻNE
 B4. Dostęp do Search Console i GA4 (właściciel konta, weryfikacja domeny) – konfiguracja po publikacji (D043).
