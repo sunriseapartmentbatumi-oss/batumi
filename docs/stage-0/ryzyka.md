@@ -8,7 +8,7 @@ Skala: prawdopodobieństwo i wpływ N/Ś/W. Wartości wstępne, do przeglądu na
 | R02 | Założenie widoku na morze lub dostępu do plaży z lokalizacji przy bulwarze | Ś | W | Weryfikacja mapy i trasy pieszej (D031) | wykonawca |
 | R03 | Nieaktualne informacje o transporcie, wjazdach, atrakcjach | W | Ś | Źródła oficjalne, data weryfikacji, cykliczny przegląd (D030) | wykonawca |
 | R04 | Obietnica dostępności/ceny bez żywego kalendarza | Ś | W | Brak obietnic bez kalendarza; `/cennik-i-dostepnosc` warunkowo (D032, D051) | właściciel |
-| R05 | Przypadkowa publikacja produkcyjna po merge do `main` | Ś | W | Deploy produkcyjny tylko przez bramkowany workflow GitHub Actions po potwierdzeniu (D033, D060); do tego czasu `noindex` | Konrad |
+| R05 | Przypadkowa publikacja produkcyjna (merge do `main`) | Ś | W | Ochrona `main` (PR, recenzent, CI); zmiany najpierw na `staging`; merge do `main` tylko po potwierdzeniu (D033, D068); do tego czasu `noindex` | Konrad |
 | R06 | Wydatki lub zakup domeny bez zgody | N | W | Zakaz bez zgody (D034) | właściciel |
 | R07 | Niezgodność prawna: podatki w Gruzji, podmiot, RODO/prywatność, regulamin | W | W | Konsultacja prawno-podatkowa (D047, D049) | właściciel |
 | R08 | Operator płatności nie obsługuje PLN dla obiektu w Gruzji | Ś | W | Weryfikacja przed Fazą C (D048) | właściciel / wykonawca |
