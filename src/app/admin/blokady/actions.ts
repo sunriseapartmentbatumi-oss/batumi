@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { blockSchema, idSchema, toDateRange } from "@/lib/admin/logic";
+import { logDbError } from "@/lib/diagnostics";
 import { requireAdmin } from "@/lib/admin/session";
 
 export async function addBlock(formData: FormData) {
@@ -16,6 +17,7 @@ export async function addBlock(formData: FormData) {
     reason: parsed.data.reason || null,
     created_by: userId,
   });
+  if (error) logDbError("admin.addBlock", error);
   revalidatePath("/admin/blokady");
   redirect(`/admin/blokady?msg=${error ? "error" : "saved"}`);
 }
@@ -25,6 +27,7 @@ export async function deleteBlock(formData: FormData) {
   const id = idSchema.safeParse(formData.get("id"));
   if (!id.success) redirect("/admin/blokady?msg=invalid");
   const { error } = await db.from("calendar_blocks").delete().eq("id", id.data);
+  if (error) logDbError("admin.deleteBlock", error);
   revalidatePath("/admin/blokady");
   redirect(`/admin/blokady?msg=${error ? "error" : "saved"}`);
 }

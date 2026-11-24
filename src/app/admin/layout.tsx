@@ -13,6 +13,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <Link href="/admin/rezerwacje">Rezerwacje</Link>
         <Link href="/admin/blokady">Blokady</Link>
         <Link href="/admin/apartament">Apartament</Link>
+        <Link href="/admin/diagnostyka">Diagnostyka</Link>
         <form action={logout}><button type="submit">Wyloguj</button></form>
       </nav>
       {children}
