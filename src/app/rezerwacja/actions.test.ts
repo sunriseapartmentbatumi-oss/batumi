@@ -2,9 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const rpc = vi.fn();
 vi.mock("server-only", () => ({}));
+let ipCounter = 0;
+vi.mock("next/headers", () => ({ headers: async () => new Headers({ "x-forwarded-for": `10.0.0.${++ipCounter}` }) }));
 vi.mock("@/lib/booking/server", () => ({
   serverClient: () => ({ rpc }),
-  notifyByEmail: vi.fn(async () => {}),
+  notifyByEmail: vi.fn(async () => ({ sent: true, reason: "ok" })),
 }));
 
 import { submitBooking } from "./actions";
@@ -15,7 +17,7 @@ function browserForm(over: Record<string, string> = {}, omit: string[] = []) {
     $ACTION_ID_abc: "",
     check_in: "2099-01-10", check_out: "2099-01-12", adults: "2", children: "0",
     first_name: "Jan", last_name: "Kowalski", email: "jan@example.com", phone: "+48123456789",
-    message: "", accept_terms: "on", accept_privacy: "on",
+    message: "", website: "", form_started: String(Date.now() - 10_000), accept_terms: "on", accept_privacy: "on",
   };
   for (const [k, v] of Object.entries({ ...base, ...over })) if (!omit.includes(k)) f.set(k, v);
   return f;
@@ -48,5 +50,21 @@ describe("submitBooking", () => {
     rpc.mockResolvedValue({ error: { code: "P0001", message: "dates_unavailable" } });
     const r = await submitBooking({}, browserForm());
     expect(r.error).toMatch(/zajęty/);
+  });
+  it("honeypot: udaje sukces, ale nic nie zapisuje", async () => {
+    const r = await submitBooking({}, browserForm({ website: "http://spam" }));
+    expect(r.ok).toBe(true);
+    expect(rpc).not.toHaveBeenCalled();
+  });
+  it("zbyt szybkie wysłanie: ogólny błąd, bez zapisu", async () => {
+    const r = await submitBooking({}, browserForm({ form_started: String(Date.now()) }));
+    expect(r.ok).toBeUndefined();
+    expect(r.error).toBeTruthy();
+    expect(rpc).not.toHaveBeenCalled();
+  });
+  it("brak znacznika czasu traktowany jak bot", async () => {
+    const r = await submitBooking({}, browserForm({}, ["form_started"]));
+    expect(r.ok).toBeUndefined();
+    expect(rpc).not.toHaveBeenCalled();
   });
 });

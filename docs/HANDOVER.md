@@ -30,4 +30,4 @@ W panelu `/admin`: pulpit (liczniki, najbliższe przyjazdy/wyjazdy), Rezerwacje 
 Nowa rezerwacja wysyła mail do właściciela przez Resend (konfiguracja: `docs/SETUP.md` §6e). Na razie dochodzi tylko na adres konta Resend; maile do gości wymagają własnej domeny (pytanie 23). Jeśli maila nie ma: spam, zakładka Emails w Resend, `/admin/diagnostyka`.
 
 ## 7. Gdy coś nie działa
-Zaloguj się do `/admin/diagnostyka` na danym środowisku; błędy szczegółowe: Vercel → Logs, szukaj `[db-error]`. Konfiguracja środowisk i admina: `docs/SETUP.md`.
+Zaloguj się do `/admin/diagnostyka` na danym środowisku; błędy szczegółowe: Vercel → Logs, szukaj `[db-error]`. Tam jest też przycisk „Wyślij testowy e-mail”, metryki rezerwacji i ostatnie błędy (wymaga opcjonalnej migracji `app_events`, patrz SETUP §6c). Konfiguracja środowisk i admina: `docs/SETUP.md`.

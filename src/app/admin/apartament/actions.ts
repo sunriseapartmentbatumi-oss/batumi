@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { amenitySchema, idSchema, propertySchema } from "@/lib/admin/logic";
+import { recordEvent } from "@/lib/events";
 import { logDbError } from "@/lib/diagnostics";
 import { requireAdmin } from "@/lib/admin/session";
 
@@ -15,7 +16,10 @@ export async function saveProperty(formData: FormData) {
   const res = existing
     ? await db.from("properties").update({ name: parsed.data!.name }).eq("id", existing.id)
     : await db.from("properties").insert({ name: parsed.data!.name });
-  if (res.error) logDbError("admin.saveProperty", res.error);
+  if (res.error) {
+    logDbError("admin.saveProperty", res.error);
+    await recordEvent("admin_action_error", "admin.saveProperty", { code: res.error.code ?? null });
+  }
   revalidatePath("/admin/apartament");
   back(res.error ? "error" : "saved");
 }
@@ -27,7 +31,10 @@ export async function addAmenity(formData: FormData) {
   const { data: property } = await db.from("properties").select("id").order("created_at").limit(1).maybeSingle();
   if (!property) back("noproperty");
   const res = await db.from("amenities").insert({ property_id: property!.id, name: parsed.data!.name });
-  if (res.error) logDbError("admin.addAmenity", res.error);
+  if (res.error) {
+    logDbError("admin.addAmenity", res.error);
+    await recordEvent("admin_action_error", "admin.addAmenity", { code: res.error.code ?? null });
+  }
   revalidatePath("/admin/apartament");
   back(res.error ? "error" : "saved");
 }
@@ -37,7 +44,10 @@ export async function deleteAmenity(formData: FormData) {
   const id = idSchema.safeParse(formData.get("id"));
   if (!id.success) back("invalid");
   const res = await db.from("amenities").delete().eq("id", id.data!);
-  if (res.error) logDbError("admin.deleteAmenity", res.error);
+  if (res.error) {
+    logDbError("admin.deleteAmenity", res.error);
+    await recordEvent("admin_action_error", "admin.deleteAmenity", { code: res.error.code ?? null });
+  }
   revalidatePath("/admin/apartament");
   back(res.error ? "error" : "saved");
 }
