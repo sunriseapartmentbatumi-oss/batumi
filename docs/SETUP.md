@@ -124,9 +124,19 @@ Gdy formularz rezerwacji zwraca błąd: zaloguj się do `/admin/diagnostyka` –
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Vercel Production i Preview (osobno) | publiczne; ustawiają, z którą bazą łączy się środowisko |
 | `SUPABASE_SERVICE_ROLE_KEY` | Vercel Production i Preview (osobno) | **tylko serwer**, bez `NEXT_PUBLIC_`; używany wyłącznie przez formularz rezerwacji |
 | `NEXT_PUBLIC_APP_URL` | Vercel | bazowy adres (sitemap) |
-| `RESEND_API_KEY`, `BOOKING_NOTIFY_EMAIL`, `BOOKING_FROM_EMAIL` | opcjonalne | bez nich e-mail jest pomijany |
+| `RESEND_API_KEY`, `BOOKING_NOTIFY_EMAIL`, `BOOKING_FROM_EMAIL` | Vercel Production i Preview (obecnie te same wartości) | wszystkie trzy wymagane do wysyłki, bez któregokolwiek e-mail jest pomijany; `BOOKING_FROM_EMAIL` w formacie `Nazwa <adres>` |
 
 Po zmianie zmiennych w Vercel wymagany jest redeploy. Brak zmiennych płatności i cron (D011 Open, D063).
+
+## 6e. Powiadomienia e-mail (Resend)
+
+Stan (D078): konto Resend założył Konrad; w Vercelu ustawione `RESEND_API_KEY`, `BOOKING_NOTIFY_EMAIL` (adres konta Resend) i `BOOKING_FROM_EMAIL` (testowy nadawca `Sunrise Batumi <onboarding@resend.dev>`) dla Preview i Production z tymi samymi wartościami. Wartości nie trafiają do repozytorium (D057). Resend, nie Gmail SMTP (limity, spam, ryzyko dla konta). Darmowy plan Resend: 3000 maili/mies., 100/dzień, do 3 domen (stan wg informacji od Konrada; **[DO POTWIERDZENIA]** w cenniku Resend).
+
+Działanie: po utworzeniu rezerwacji `notifyByEmail` (`src/lib/booking/server.ts`) wysyła jedno powiadomienie do właściciela przez API Resend (fetch, bez biblioteki). Błąd maila nie blokuje rezerwacji; bez wszystkich trzech zmiennych nic nie jest wysyłane.
+
+Ograniczenia: bez zweryfikowanej własnej domeny Resend dostarcza tylko na adres konta Resend. Maile do gości (potwierdzenia) **nie są zaimplementowane**; wymagają domeny z SPF/DKIM (D077, pytanie 23 do Roberta).
+
+Weryfikacja: złóż testową rezerwację na stagingu → sprawdź skrzynkę (także spam) → w Resend zakładka **Emails** (status dostarczenia) → w razie braku maila logi Vercel. Po zmianie zmiennych wymagany redeploy.
 
 ## 7. Otwarte punkty
 
