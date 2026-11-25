@@ -3,7 +3,7 @@
 Dotyczy dowolnego agenta (Claude Code, Claude w przeglądarce, inne). Repo jest agent-agnostyczne; `AGENTS.md` wskazuje ten plik.
 
 ## Projekt
-Polskojęzyczny serwis jednego apartamentu w Batumi (okolice bulwaru Lecha i Marii Kaczyńskich): strona oferty/SEO, przewodnik, formularz rezerwacji z blokadą terminu (bez płatności online), panel `/admin`. Stack: Next.js 15 (App Router) + TypeScript, Vercel, Supabase (Postgres/Auth/RLS), Resend (opcjonalnie), Vitest. Projekt hobbystyczny (D062).
+Polskojęzyczny serwis jednego apartamentu w Batumi (okolice bulwaru Lecha i Marii Kaczyńskich): strona oferty/SEO, przewodnik, formularz rezerwacji z blokadą terminu (bez płatności online), panel `/admin`. Stack: Next.js 15 (App Router) + TypeScript, Vercel, Supabase (Postgres/Auth/RLS), Resend (powiadomienie e-mail dla właściciela; maile do gości niezaimplementowane, wymagają własnej domeny – D077/D078), Vitest. Projekt hobbystyczny (D062).
 
 Role: **Robert** – właściciel obiektu, decyzje biznesowe, dane oferty, zgoda na publikację. **Konrad** – właściciel techniczny (konta, środowiska, narzędzia).
 
@@ -15,7 +15,7 @@ Role: **Robert** – właściciel obiektu, decyzje biznesowe, dane oferty, zgoda
 5. Sekrety nigdy w repo (D057); `.env.local` lokalnie. `SUPABASE_SERVICE_ROLE_KEY` tylko serwer. PII gości nie trafia do logów.
 6. Przepływ: nowa gałąź od `staging` → PR do `staging` (D068, D075). Zmiany schematu = **nowy** plik w `supabase/migrations` (nie edytuj istniejących); migracje stosuje człowiek ręcznie (D072).
 7. Przed PR: `npm run lint && npm run typecheck && npm run test && npm run build`.
-8. Zmiana decyzji/architektury = aktualizacja `docs/DECISIONS.md` (nowe ID od D078; istniejących nie zmieniaj).
+8. Zmiana decyzji/architektury = aktualizacja `docs/DECISIONS.md` (nowe ID od D079; istniejących nie zmieniaj).
 
 ## Mapa dokumentów (hierarchia)
 `docs/PRODUCT.md` → `docs/REQUIREMENTS.md` → `docs/ARCHITECTURE.md` → `docs/DATA-MODEL.md` → `docs/DECISIONS.md`. Operacyjne: `docs/SETUP.md` (runbook środowisk, migracje, admin), `docs/PROCESS.md`, `docs/SEO-CONTENT.md`, `docs/HANDOVER.md` (jak Robert pracuje z Claude), `docs/stage-0/` (pytania do Roberta, rejestr faktów, ryzyka).
