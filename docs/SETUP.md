@@ -10,7 +10,7 @@ Konta zakłada Konrad samodzielnie. Agent/automatyzacja nie zakłada kont, nie k
 |---|---|---|---|
 | Vercel Hobby a użycie komercyjne | Plan Hobby wolno używać „wyłącznie do użytku osobistego lub niekomercyjnego”. Projekt jest na razie hobbystyczny (D062 Accepted); przy komercjalizacji wrócić do decyzji. | https://vercel.com/legal/terms (sekcja Hobby Plan, aktualizacja 2026-10-19) | D062 |
 | Vercel Hobby – limity | m.in. 1 mln wywołań funkcji, 100 GB transferu; po przekroczeniu funkcja bywa niedostępna przez 30 dni. | https://vercel.com/docs/plans/hobby, https://vercel.com/docs/limits/fair-use-guidelines | D062 |
-| Vercel Cron na Hobby | Tylko 1x dziennie, dokładność ±59 min. Nie używamy crona: wygasanie hold leniwe przez `hold_expires_at` (D063). | https://vercel.com/docs/schedules/cron-jobs/usage-and-pricing | D063 |
+| Vercel Cron na Hobby | Tylko 1x dziennie, dokładność ±59 min. Jedyny cron: dzienne przypomnienia o zameldowaniu (D083); wygasanie hold nadal leniwe przez `hold_expires_at` (D063). | https://vercel.com/docs/schedules/cron-jobs/usage-and-pricing | D063 |
 | Supabase Free | Pauzowanie projektu po 7 dniach niskiej aktywności; ok. 500 MB bazy, 1 GB plików, 2 aktywne projekty. | https://supabase.com/docs/guides/platform/free-project-pausing, https://supabase.com/pricing | D064 |
 
 Wniosek: projekt jest na razie hobbystyczny, więc darmowe plany wystarczają (D062, D063 Accepted). Przy komercjalizacji wróć do D062 i D064 (pauzowanie Supabase, Open).
@@ -53,7 +53,7 @@ Domena: zostaje `*.vercel.app`; własna domena dopiero za zgodą Roberta (D034, 
 |---|---|---|---|
 | Vercel Hobby a użycie komercyjne | Plan Hobby wolno używać „wyłącznie do użytku osobistego lub niekomercyjnego”. Projekt jest na razie hobbystyczny; przy komercjalizacji wrócić do planu/hostingu. | https://vercel.com/legal/terms (sekcja Hobby Plan, aktualizacja 2026-10-19) | D062 |
 | Vercel Hobby – limity | m.in. 1 mln wywołań funkcji, 100 GB transferu; po przekroczeniu funkcja bywa niedostępna przez 30 dni. | https://vercel.com/docs/plans/hobby, https://vercel.com/docs/limits/fair-use-guidelines | D062 |
-| Vercel Cron na Hobby | Tylko 1x dziennie. Nie używamy crona: wygasanie hold leniwe przez `hold_expires_at`. | https://vercel.com/docs/schedules/cron-jobs/usage-and-pricing | D063 |
+| Vercel Cron na Hobby | Tylko 1x dziennie. Jedyny cron: dzienne przypomnienia (D083); wygasanie hold leniwe. | https://vercel.com/docs/schedules/cron-jobs/usage-and-pricing | D063 |
 | Supabase Free | Pauzowanie po 7 dniach niskiej aktywności; ok. 500 MB bazy, 1 GB plików, 2 aktywne projekty. | https://supabase.com/docs/guides/platform/free-project-pausing, https://supabase.com/pricing | D064 |
 
 Uwaga: Supabase Free pozwala na 2 aktywne projekty na organizację – staging + production mieszczą się dokładnie w limicie.
@@ -131,7 +131,7 @@ Dodatkowo `/admin/diagnostyka` zawiera: przycisk „Wyślij testowy e-mail” (w
 | `GUEST_EMAIL_ENABLED` | Vercel (opcjonalnie) | `true` włącza potwierdzenia dla gości; domyślnie wyłączone; działa tylko z `BOOKING_FROM_EMAIL` z własnej zweryfikowanej domeny (D082) |
 | `RESEND_API_KEY`, `BOOKING_NOTIFY_EMAIL`, `BOOKING_FROM_EMAIL` | Vercel Production i Preview (obecnie te same wartości) | wszystkie trzy wymagane do wysyłki, bez któregokolwiek e-mail jest pomijany; `BOOKING_FROM_EMAIL` w formacie `Nazwa <adres>` |
 
-Po zmianie zmiennych w Vercel wymagany jest redeploy. Brak zmiennych płatności i cron (D011 Open, D063).
+Po zmianie zmiennych w Vercel wymagany jest redeploy. Brak zmiennych płatności (D011 Open). Zmienne crona przypomnień: `CRON_SECRET` (wymagany do uruchomienia crona) i `REMINDER_DAYS_BEFORE` (opcjonalnie, domyślnie 3) – patrz §6g.
 
 ## 6e. Powiadomienia e-mail (Resend)
 
@@ -153,6 +153,15 @@ Ulepszenia panelu (pulpit, filtry, szczegóły, CSV, kalendarz) nie wymagają no
 - **Częstotliwość (zalecenie):** raz w tygodniu oraz przed każdą migracją/większą zmianą; wersja produkcyjna po pierwszych realnych rezerwacjach – częściej.
 - **Supabase:** plan Free nie daje automatycznych kopii z odtwarzaniem [DO POTWIERDZENIA aktualne limity planu w dashboardzie Supabase]; pełny zrzut bazy: `pg_dump` z connection string (Dashboard → Database) lub eksport z dashboardu. Eksport z panelu nie obejmuje użytkowników Auth ani funkcji/migracji (te są w repo).
 - **Odtwarzanie:** dane z JSON/CSV importuje człowiek ręcznie (SQL Editor / Table Editor); nie ma automatycznego importu.
+
+## 6g. Cron przypomnień o zameldowaniu (D083)
+
+- **Co robi:** raz dziennie (`vercel.json`, 06:00 UTC ≈ 10:00 w Batumi; Hobby: okno do godziny) endpoint `/api/cron/przypomnienia` wysyła mail do gości **potwierdzonych** rezerwacji (potwierdza administrator w `/admin`), których przyjazd jest w ciągu `REMINDER_DAYS_BEFORE` dni (domyślnie 3) i którym jeszcze nie wysłano przypomnienia. Po udanej wysyłce ustawia `reminder_sent_at` (brak duplikatów); błąd jednej wiadomości nie przerywa pętli.
+- **Wysyła tylko** gdy `GUEST_EMAIL_ENABLED=true` i `BOOKING_FROM_EMAIL` z własnej zweryfikowanej domeny (§6e); inaczej nic nie wysyła i nic nie oznacza.
+- **Migracja (Konrad, ręcznie w SQL Editor stagingu, potem produkcji):** `supabase/migrations/20261125120000_reservation_reminder.sql` (kolumna `reminder_sent_at`). Wymagana, zanim cron zacznie działać.
+- **Zmienne (Vercel → Preview i Production):** `CRON_SECRET` – dowolny długi losowy ciąg (Vercel dołącza go automatycznie jako `Authorization: Bearer`; bez niego endpoint zwraca 401); `REMINDER_DAYS_BEFORE` – opcjonalnie.
+- **Uwaga:** Vercel uruchamia crony wyłącznie dla wdrożenia **Production**; na Preview/stagingu endpoint można sprawdzić ręcznie: `curl -H "Authorization: Bearer <CRON_SECRET>" <adres>/api/cron/przypomnienia`. Status ostatniego uruchomienia: `/admin/diagnostyka` (wymaga `app_events`).
+- Treść maila: dojazd, godziny zameldowania i kontakt to `[DO POTWIERDZENIA]` do czasu odpowiedzi Roberta.
 
 ## 7. Otwarte punkty
 

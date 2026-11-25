@@ -27,7 +27,7 @@ Gość widzi potwierdzenie z numerem rezerwacji i może sprawdzić status na `/r
 W panelu `/admin`: pulpit (liczniki, najbliższe przyjazdy/wyjazdy), Rezerwacje (filtry, szczegóły, „Pobierz CSV”), Kalendarz (rezerwacje i blokady).
 
 ## 6. Powiadomienia e-mail
-Kopia danych: `/admin/kopia` (procedura w `docs/SETUP.md` §6f). Mail dla gościa jest gotowy, ale wyłączony do czasu własnej domeny (`GUEST_EMAIL_ENABLED`, SETUP §6e).
+Przypomnienia o zameldowaniu: dzienny cron dla potwierdzonych rezerwacji (SETUP §6g; wymaga migracji `reminder_sent_at`, `CRON_SECRET` i włączonych maili do gości). Kopia danych: `/admin/kopia` (procedura w `docs/SETUP.md` §6f). Mail dla gościa jest gotowy, ale wyłączony do czasu własnej domeny (`GUEST_EMAIL_ENABLED`, SETUP §6e).
 
 Nowa rezerwacja wysyła mail do właściciela przez Resend (konfiguracja: `docs/SETUP.md` §6e). Na razie dochodzi tylko na adres konta Resend; maile do gości wymagają własnej domeny (pytanie 23). Jeśli maila nie ma: spam, zakładka Emails w Resend, `/admin/diagnostyka`.
 

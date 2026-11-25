@@ -57,6 +57,7 @@ export type Reservation = {
   terms_accepted_at: string;
   hold_expires_at: string | null;
   confirmed_at: string | null;
+  reminder_sent_at: string | null;
   cancelled_at: string | null;
   completed_at: string | null;
 } & Timestamps;

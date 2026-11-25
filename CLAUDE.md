@@ -15,13 +15,13 @@ Role: **Robert** – właściciel obiektu, decyzje biznesowe, dane oferty, zgoda
 5. Sekrety nigdy w repo (D057); `.env.local` lokalnie. `SUPABASE_SERVICE_ROLE_KEY` tylko serwer. PII gości nie trafia do logów.
 6. Przepływ: nowa gałąź od `staging` → PR do `staging` (D068, D075). Zmiany schematu = **nowy** plik w `supabase/migrations` (nie edytuj istniejących); migracje stosuje człowiek ręcznie (D072).
 7. Przed PR: `npm run lint && npm run typecheck && npm run test && npm run build`.
-8. Zmiana decyzji/architektury = aktualizacja `docs/DECISIONS.md` (nowe ID od D083; istniejących nie zmieniaj).
+8. Zmiana decyzji/architektury = aktualizacja `docs/DECISIONS.md` (nowe ID od D084; istniejących nie zmieniaj).
 
 ## Mapa dokumentów (hierarchia)
 `docs/PRODUCT.md` → `docs/REQUIREMENTS.md` → `docs/ARCHITECTURE.md` → `docs/DATA-MODEL.md` → `docs/DECISIONS.md`. Operacyjne: `docs/SETUP.md` (runbook środowisk, migracje, admin), `docs/PROCESS.md`, `docs/SEO-CONTENT.md`, `docs/HANDOVER.md` (jak Robert pracuje z Claude), `docs/stage-0/` (pytania do Roberta, rejestr faktów, ryzyka).
 
 ## Stan (2026-11-24)
-- Środowiska (D068): jeden projekt Vercel; `main` = Production (`sunrise-batumi.vercel.app`), `staging` = Preview (`test-sunrise-batumi.vercel.app`); dwa projekty Supabase (staging/production). Brak crona – wygasanie hold leniwe (D063). CI: `.github/workflows/ci.yml`.
+- Środowiska (D068): jeden projekt Vercel; `main` = Production (`sunrise-batumi.vercel.app`), `staging` = Preview (`test-sunrise-batumi.vercel.app`); dwa projekty Supabase (staging/production). Wygasanie hold leniwe (D063); jedyny cron to dzienne przypomnienia o zameldowaniu (D083, tylko Production). CI: `.github/workflows/ci.yml`.
 - Zrobione: strona z treściami ogólnymi, `/rezerwacja`, sitemap/robots, panel `/admin` (apartament, rezerwacje, blokady), `/admin/diagnostyka`, trzy migracje (`initial_schema`, `create_reservation_rpc`, `bootstrap_admin`), RPC `create_pending_reservation(..., p_hold_minutes)`, logi `[db-error]`/`[validation-error]`/`[action-error]`/`[config-error]`.
 - Niezrobione: płatności (D011 Open), ceny/opłaty, treści z potwierdzonych faktów, zdjęcia, analityka + zgoda cookies, polityki prawne, własna domena.
 

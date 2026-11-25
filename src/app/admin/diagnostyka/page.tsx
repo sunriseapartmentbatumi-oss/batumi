@@ -11,12 +11,12 @@ type Check = { name: string; ok: boolean; info: string; hint?: string };
 async function runChecks(): Promise<Check[]> {
   const checks: Check[] = [];
   const env = (k: string) => Boolean(process.env[k]);
-  for (const k of ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "RESEND_API_KEY", "BOOKING_NOTIFY_EMAIL", "BOOKING_FROM_EMAIL"]) {
-    const required = !k.startsWith("RESEND") && !k.startsWith("BOOKING");
+  for (const k of ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "RESEND_API_KEY", "BOOKING_NOTIFY_EMAIL", "BOOKING_FROM_EMAIL", "GUEST_EMAIL_ENABLED", "CRON_SECRET", "REMINDER_DAYS_BEFORE"]) {
+    const required = !/^(RESEND|BOOKING|GUEST|CRON|REMINDER)/.test(k);
     checks.push({
       name: `Zmienna ${k}`,
       ok: env(k) || !required,
-      info: env(k) ? "ustawiona" : required ? "BRAK" : "nieustawiona (opcjonalna – e-mail pomijany)",
+      info: env(k) ? "ustawiona" : required ? "BRAK" : "nieustawiona (opcjonalna – funkcja wyłączona/domyślna)",
       hint: !env(k) && required ? "Ustaw w Vercel → Settings → Environment Variables dla tego środowiska i zrób redeploy." : undefined,
     });
   }
@@ -83,6 +83,7 @@ export default async function DiagnosticsPage() {
   const m = await loadMetrics(db);
   const f7 = m.events ? funnel(m.events, 7 * DAY) : null;
   const f30 = m.events ? funnel(m.events, 30 * DAY) : null;
+  const lastCron = m.events?.find((e) => e.kind === "cron_reminders");
   const errors = m.events ? recentErrors(m.events) : [];
   return (
     <main>
@@ -100,6 +101,13 @@ export default async function DiagnosticsPage() {
       <h2>Powiadomienia e-mail</h2>
       <p>Wysyła wiadomość testową na adres z BOOKING_NOTIFY_EMAIL (tak samo jak powiadomienie o rezerwacji). Wynik pokazuje także brak zmiennych.</p>
       <TestEmailButton />
+
+      <h2>Przypomnienia o zameldowaniu (cron)</h2>
+      {m.events ? (
+        lastCron ? (
+          <p>Ostatnie uruchomienie: {new Date(lastCron.created_at).toLocaleString("pl-PL", { timeZone: "Asia/Tbilisi" })} – <code>{JSON.stringify(lastCron.detail ?? {})}</code></p>
+        ) : <p>Brak zapisanych uruchomień (cron działa tylko na Production i wymaga CRON_SECRET; wysyła tylko przy GUEST_EMAIL_ENABLED=true).</p>
+      ) : <p>Historia uruchomień wymaga tabeli <code>app_events</code>; sprawdź Vercel → Logs.</p>}
 
       <h2>Metryki rezerwacji</h2>
       <ul>
