@@ -31,3 +31,22 @@ export async function notifyByEmail(subject: string, text: string): Promise<Emai
     return { sent: false, reason: "Błąd połączenia z Resend" };
   }
 }
+
+// Potwierdzenie dla gościa: wyłączone domyślnie (guestEmailEnabled sprawdza flagę i domenę nadawcy w wywołującym).
+export async function sendGuestEmail(to: string, mail: { subject: string; text: string; html: string }): Promise<EmailResult> {
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: process.env.BOOKING_FROM_EMAIL, to, subject: mail.subject, text: mail.text, html: mail.html }),
+    });
+    if (!res.ok) {
+      console.error("[email-error]", JSON.stringify({ operation: "sendGuestEmail", status: res.status }));
+      return { sent: false, reason: `Resend odpowiedział statusem ${res.status}` };
+    }
+    return { sent: true, reason: "Wysłano" };
+  } catch (e) {
+    console.error("[email-error]", JSON.stringify({ operation: "sendGuestEmail", message: e instanceof Error ? e.message : String(e) }));
+    return { sent: false, reason: "Błąd połączenia z Resend" };
+  }
+}

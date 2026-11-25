@@ -1,12 +1,14 @@
 "use server";
 import { bookingSchema, makeReference } from "@/lib/booking/validation";
-import { notifyByEmail, serverClient } from "@/lib/booking/server";
+import { notifyByEmail, sendGuestEmail, serverClient } from "@/lib/booking/server";
 import { TBC } from "@/lib/site";
 import { logDbError, userMessage } from "@/lib/diagnostics";
 import { headers } from "next/headers";
 import { botVerdict, clientIp } from "@/lib/booking/guard";
 import { createRateLimiter } from "@/lib/booking/status";
 import { recordEvent } from "@/lib/events";
+import { buildGuestEmail, guestEmailEnabled } from "@/lib/booking/guest-email";
+import { formatHold } from "@/lib/booking/status";
 
 export type BookingState = {
   ok?: boolean;
@@ -101,6 +103,19 @@ async function handle(_prev: BookingState, formData: FormData): Promise<BookingS
     `${v.first_name} ${v.last_name}, ${v.email}, ${v.phone}\n${v.check_in} – ${v.check_out}, dorośli: ${v.adults}, dzieci: ${v.children}`,
   );
   if (!mail.sent && !mail.reason.startsWith("Brak zmiennych")) await recordEvent("email_error", "notifyByEmail", { reason: mail.reason });
+  if (guestEmailEnabled(process.env)) {
+    try {
+      const base = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
+      const guestMail = buildGuestEmail({
+        reference, firstName: v.first_name, checkIn: v.check_in, checkOut: v.check_out, adults: v.adults, children: v.children,
+        holdExpiresAtLabel: formatHold(holdExpiresAt), statusUrl: base ? `${base}/rezerwacja/status` : null,
+      });
+      const sent = await sendGuestEmail(v.email, guestMail);
+      if (!sent.sent) await recordEvent("email_error", "sendGuestEmail", { reason: sent.reason });
+    } catch {
+      // e-mail do gościa nie może blokować rezerwacji
+    }
+  }
   return { ok: true, reference, summary: { check_in: v.check_in, check_out: v.check_out, adults: v.adults, children: v.children, holdExpiresAt } };
 }
 
