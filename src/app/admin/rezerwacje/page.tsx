@@ -1,18 +1,11 @@
 import Link from "next/link";
-import { canTransition } from "@/lib/admin/logic";
+import { applyReservationFilters } from "@/lib/admin/query";
+import { parseFilters, STATUS_LABELS } from "@/lib/admin/reports";
 import { requireAdmin } from "@/lib/admin/session";
 import type { ReservationStatus } from "@/types/database";
-import { changeStatus } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-const labels: Record<ReservationStatus, string> = {
-  pending_payment: "Oczekująca",
-  confirmed: "Potwierdzona",
-  cancelled: "Anulowana",
-  expired: "Wygasła",
-  completed: "Zakończona",
-};
 const messages: Record<string, string> = {
   saved: "Zapisano.",
   invalid: "Niepoprawne dane.",
@@ -20,40 +13,36 @@ const messages: Record<string, string> = {
   error: "Błąd zapisu (np. termin koliduje z inną rezerwacją).",
 };
 
-export default async function ReservationsPage({ searchParams }: { searchParams: Promise<{ status?: string; msg?: string }> }) {
-  const { status, msg } = await searchParams;
+export default async function ReservationsPage({ searchParams }: { searchParams: Promise<{ status?: string; from?: string; to?: string; q?: string; msg?: string }> }) {
+  const sp = await searchParams;
+  const f = parseFilters(sp);
   const { db } = await requireAdmin();
   await db.rpc("expire_stale_reservations").then(() => null, () => null);
-  let q = db.from("reservations").select("*").order("created_at", { ascending: false }).limit(200);
-  if (status && status in labels) q = q.eq("status", status as ReservationStatus);
-  const { data } = await q;
+  const { data } = await applyReservationFilters(db.from("reservations").select("id,reference,status,check_in,check_out,nights_count,adults_count,children_count,guest_first_name,guest_last_name,guest_email").order("created_at", { ascending: false }).limit(200), f);
+  const exportQs = new URLSearchParams(Object.entries(f).filter(([, v]) => v) as [string, string][]).toString();
   return (
     <main>
       <h1>Rezerwacje</h1>
-      {msg && messages[msg] && <p role="status">{messages[msg]}</p>}
-      <p>
-        <Link href="/admin/rezerwacje">Wszystkie</Link>
-        {(Object.keys(labels) as ReservationStatus[]).map((s) => (
-          <span key={s}> | <Link href={`/admin/rezerwacje?status=${s}`}>{labels[s]}</Link></span>
+      {sp.msg && messages[sp.msg] && <p role="status">{messages[sp.msg]}</p>}
+      <form method="get" style={{ display: "grid", gap: "0.5rem", marginBottom: "1rem" }}>
+        <label>Szukaj (numer, imię, nazwisko, e-mail) <input type="search" name="q" defaultValue={f.q ?? ""} /></label>
+        <label>Status
+          <select name="status" defaultValue={f.status ?? ""}>
+            <option value="">Wszystkie</option>
+            {(Object.keys(STATUS_LABELS) as ReservationStatus[]).map((s) => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
+          </select>
+        </label>
+        <label>Pobyt od <input type="date" name="from" defaultValue={f.from ?? ""} /></label>
+        <label>Pobyt do <input type="date" name="to" defaultValue={f.to ?? ""} /></label>
+        <div><button type="submit">Filtruj</button> <Link href="/admin/rezerwacje">Wyczyść</Link> | <a href={`/admin/rezerwacje/export${exportQs ? `?${exportQs}` : ""}`}>Pobierz CSV</a></div>
+      </form>
+      <ul>
+        {(data ?? []).map((r) => (
+          <li key={r.id}>
+            <Link href={`/admin/rezerwacje/${r.id}`}>{r.reference}</Link> – {STATUS_LABELS[r.status as ReservationStatus]} – {r.check_in} → {r.check_out} ({r.nights_count} nocy) – {r.guest_first_name} {r.guest_last_name}
+          </li>
         ))}
-      </p>
-      {(data ?? []).map((r) => (
-        <article key={r.id} style={{ border: "1px solid #ddd", padding: "0.75rem", marginBottom: "0.75rem" }}>
-          <h3>{r.reference} – {labels[r.status as ReservationStatus]}</h3>
-          <p>{r.check_in} – {r.check_out} ({r.nights_count} nocy), dorośli: {r.adults_count}, dzieci: {r.children_count}</p>
-          <p>{r.guest_first_name} {r.guest_last_name}, {r.guest_email}, {r.guest_phone}</p>
-          {r.guest_message && <p>Wiadomość: {r.guest_message}</p>}
-          {(["confirmed", "cancelled", "completed"] as ReservationStatus[])
-            .filter((to) => canTransition(r.status as ReservationStatus, to))
-            .map((to) => (
-              <form key={to} action={changeStatus} style={{ display: "inline", marginRight: "0.5rem" }}>
-                <input type="hidden" name="id" value={r.id} />
-                <input type="hidden" name="to" value={to} />
-                <button type="submit">{to === "confirmed" ? "Potwierdź" : to === "cancelled" ? "Anuluj" : "Zakończ"}</button>
-              </form>
-            ))}
-        </article>
-      ))}
+      </ul>
       {(data ?? []).length === 0 && <p>Brak rezerwacji.</p>}
     </main>
   );

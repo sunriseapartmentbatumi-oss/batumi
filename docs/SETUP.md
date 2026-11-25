@@ -140,6 +140,8 @@ Weryfikacja: złóż testową rezerwację na stagingu → sprawdź skrzynkę (ta
 
 Strona statusu gościa (`/rezerwacja/status`) nie wymaga nowej migracji ani zmiennych; korzysta z `SUPABASE_SERVICE_ROLE_KEY`. Test: złóż rezerwację, zapisz numer, sprawdź status z tym samym e-mailem oraz z błędnym (powinno być „nie znaleziono”).
 
+Ulepszenia panelu (pulpit, filtry, szczegóły, CSV, kalendarz) nie wymagają nowej migracji. Nie ma jeszcze historii statusów ani notatek do zmian statusu – wymagałyby nowej migracji (nowa tabela/kolumna; Konrad wkleiłby ją w SQL Editor stagingu).
+
 ## 7. Otwarte punkty
 
 D064 (pauzowanie Supabase), D066 (domena). Szczegóły: `docs/DECISIONS.md`.
