@@ -8,7 +8,8 @@ export type EventKind =
   | "booking_blocked"
   | "booking_rate_limited"
   | "admin_action_error"
-  | "email_error";
+  | "email_error"
+  | "cron_reminders";
 
 // Best effort: zapis do opcjonalnej tabeli app_events; brak tabeli lub błąd nigdy nie psuje akcji.
 // W `detail` wyłącznie dane techniczne (kody błędów, nazwy pól) – bez danych osobowych i sekretów.
