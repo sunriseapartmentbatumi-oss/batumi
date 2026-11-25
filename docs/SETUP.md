@@ -117,6 +117,10 @@ Inny admin: dodaj użytkownika w Auth i wstaw wiersz ręcznie: `insert into admi
 
 Gdy formularz rezerwacji zwraca błąd: zaloguj się do `/admin/diagnostyka` – pokazuje, które zmienne środowiskowe są ustawione (bez wartości), host Supabase, istnienie wiersza `properties` i funkcji z migracji, wraz z podpowiedzią naprawy. Szczegóły błędów baz danych są w logach serwera Vercel (Logs → szukaj `[db-error]` lub `[config-error]`); logi nie zawierają danych gości ani kluczy.
 
+Dodatkowo `/admin/diagnostyka` zawiera: przycisk „Wyślij testowy e-mail” (wynik także przy braku zmiennych), metryki (rezerwacje z ostatnich 7/30 dni; zapisy, błędy walidacji/zapisu, zablokowane boty i konwersja z dziennika zdarzeń) oraz listę ostatnich błędów.
+
+**Opcjonalna migracja `20261125100000_app_events.sql`** tworzy tabelę `app_events` (zdarzenia techniczne: rodzaj, operacja, kody błędów/nazwy pól – bez danych osobowych; zapis tylko przez service_role, odczyt tylko admin). Konrad wkleja ją w SQL Editor stagingu (potem produkcji). Bez niej aplikacja działa, a diagnostyka pokazuje komunikat o braku dziennika; błędy są wtedy tylko w Vercel Logs (`[db-error]`, `[validation-error]`, `[action-error]`, `[bot-blocked]`, `[rate-limited]`, `[email-error]`). Wbudowane opcje Vercela: **Logs** (logi serwera) i **Analytics** (ruch; włączane w projekcie Vercel, opcjonalne).
+
 ## 6d. Zmienne środowiskowe (komplet)
 
 | Zmienna | Gdzie | Uwagi |

@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { canTransition, idSchema, reservationStatusSchema, statusTimestampColumn } from "@/lib/admin/logic";
+import { recordEvent } from "@/lib/events";
 import { logDbError } from "@/lib/diagnostics";
 import { requireAdmin } from "@/lib/admin/session";
 
@@ -17,7 +18,10 @@ export async function changeStatus(formData: FormData) {
   if (col) patch[col] = new Date().toISOString();
   if (to.data !== "pending_payment") patch.hold_expires_at = null;
   const { error } = await db.from("reservations").update(patch).eq("id", id.data).eq("status", current.status);
-  if (error) logDbError("admin.changeStatus", error, { to: to.data });
+  if (error) {
+    logDbError("admin.changeStatus", error, { to: to.data });
+    await recordEvent("admin_action_error", "admin.changeStatus", { code: error.code ?? null });
+  }
   revalidatePath("/admin/rezerwacje");
   redirect(`/admin/rezerwacje?msg=${error ? "error" : "saved"}`);
 }

@@ -3,6 +3,10 @@ import { bookingSchema, makeReference } from "@/lib/booking/validation";
 import { notifyByEmail, serverClient } from "@/lib/booking/server";
 import { TBC } from "@/lib/site";
 import { logDbError, userMessage } from "@/lib/diagnostics";
+import { headers } from "next/headers";
+import { botVerdict, clientIp } from "@/lib/booking/guard";
+import { createRateLimiter } from "@/lib/booking/status";
+import { recordEvent } from "@/lib/events";
 
 export type BookingState = {
   ok?: boolean;
@@ -23,14 +27,39 @@ function echoValues(formData: FormData): Record<string, string> {
 }
 
 const HOLD_MINUTES = 15;
+const allow = createRateLimiter(8, 10 * 60_000);
+
+// Boty dostają zwykłe potwierdzenie (nic nie zapisujemy); zbyt szybkie wysłanie – ogólny błąd bez ujawniania powodu.
+function fakeSuccess(formData: FormData): BookingState {
+  const ci = String(formData.get("check_in") ?? "");
+  const co = String(formData.get("check_out") ?? "");
+  return {
+    ok: true,
+    reference: makeReference(),
+    summary: { check_in: ci, check_out: co, adults: 1, children: 0, holdExpiresAt: new Date(Date.now() + HOLD_MINUTES * 60_000).toISOString() },
+  };
+}
 
 async function handle(_prev: BookingState, formData: FormData): Promise<BookingState> {
+  const verdict = botVerdict(formData);
+  if (verdict !== "ok") {
+    console.error("[bot-blocked]", JSON.stringify({ operation: "submitBooking", reason: verdict }));
+    await recordEvent("booking_blocked", "submitBooking", { reason: verdict });
+    return verdict === "honeypot" ? fakeSuccess(formData) : { error: GENERIC_ERROR, values: echoValues(formData) };
+  }
+  const ip = clientIp(await headers());
+  if (!allow(ip)) {
+    console.error("[rate-limited]", JSON.stringify({ operation: "submitBooking" }));
+    await recordEvent("booking_rate_limited", "submitBooking");
+    return { error: "Zbyt wiele prób. Spróbuj ponownie za kilka minut.", values: echoValues(formData) };
+  }
   const today = new Date().toISOString().slice(0, 10);
   const parsed = bookingSchema(today).safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};
     for (const i of parsed.error.issues) fieldErrors[String(i.path[0])] ??= i.message;
     console.error("[validation-error]", JSON.stringify({ operation: "submitBooking", fields: Object.keys(fieldErrors) }));
+    await recordEvent("booking_validation_error", "submitBooking", { fields: Object.keys(fieldErrors) });
     return { error: "Popraw zaznaczone pola formularza.", fieldErrors, values: echoValues(formData) };
   }
   const db = serverClient();
@@ -63,12 +92,15 @@ async function handle(_prev: BookingState, formData: FormData): Promise<BookingS
   });
   if (error) {
     const kind = logDbError("create_pending_reservation", error, { reference });
+    await recordEvent("booking_db_error", "create_pending_reservation", { kind, code: error.code ?? null });
     return { error: userMessage(kind), values: echoValues(formData) };
   }
-  await notifyByEmail(
+  await recordEvent("booking_success", "submitBooking");
+  const mail = await notifyByEmail(
     `Nowa rezerwacja ${reference}`,
     `${v.first_name} ${v.last_name}, ${v.email}, ${v.phone}\n${v.check_in} – ${v.check_out}, dorośli: ${v.adults}, dzieci: ${v.children}`,
   );
+  if (!mail.sent && !mail.reason.startsWith("Brak zmiennych")) await recordEvent("email_error", "notifyByEmail", { reason: mail.reason });
   return { ok: true, reference, summary: { check_in: v.check_in, check_out: v.check_out, adults: v.adults, children: v.children, holdExpiresAt } };
 }
 
@@ -77,6 +109,7 @@ export async function submitBooking(prev: BookingState, formData: FormData): Pro
     return await handle(prev, formData);
   } catch (e) {
     console.error("[action-error]", JSON.stringify({ operation: "submitBooking", message: e instanceof Error ? e.message : String(e) }));
+    await recordEvent("booking_db_error", "submitBooking", { kind: "exception" });
     return { error: GENERIC_ERROR, values: echoValues(formData) };
   }
 }

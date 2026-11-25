@@ -1,14 +1,16 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { submitBooking, type BookingState } from "./actions";
 import Link from "next/link";
 import { TBC } from "@/lib/site";
 import { formatHold } from "@/lib/booking/status";
+import { HONEYPOT_FIELD, STARTED_FIELD } from "@/lib/booking/guard";
 
 const initial: BookingState = {};
 
 export function BookingForm() {
   const [state, action, pending] = useActionState(submitBooking, initial);
+  const [started] = useState(() => String(Date.now()));
   if (state.ok) {
     const sm = state.summary;
     return (
@@ -38,6 +40,10 @@ export function BookingForm() {
           {errors.length > 0 && <ul>{errors.map((e, i) => <li key={i}>{e}</li>)}</ul>}
         </div>
       )}
+      <input type="hidden" name={STARTED_FIELD} value={started} suppressHydrationWarning />
+      <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
+        <label>Nie wypełniaj tego pola <input name={HONEYPOT_FIELD} tabIndex={-1} autoComplete="off" /></label>
+      </div>
       <label>Przyjazd <input type="date" name="check_in" defaultValue={v("check_in")} required />{err("check_in")}</label>
       <label>Wyjazd <input type="date" name="check_out" defaultValue={v("check_out")} required />{err("check_out")}</label>
       <label>Dorośli <input type="number" name="adults" min={1} defaultValue={v("adults", "2")} required />{err("adults")}</label>
