@@ -3,8 +3,12 @@
 
 create extension if not exists btree_gist;
 
-create type reservation_status as enum ('pending_payment','confirmed','cancelled','expired','completed');
-create type booking_source as enum ('direct','phone','airbnb','booking','other');
+do $$ begin
+  create type reservation_status as enum ('pending_payment','confirmed','cancelled','expired','completed');
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create type booking_source as enum ('direct','phone','airbnb','booking','other');
+exception when duplicate_object then null; end $$;
 
 create or replace function set_updated_at() returns trigger
 language plpgsql as $$
@@ -14,14 +18,14 @@ begin
 end;
 $$;
 
-create table admin_profiles (
+create table if not exists admin_profiles (
   user_id uuid primary key references auth.users(id) on delete cascade,
   role text not null default 'admin',
   is_active boolean not null default true,
   created_at timestamptz not null default now()
 );
 
-create table properties (
+create table if not exists properties (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   currency char(3) not null default 'PLN',
@@ -33,14 +37,14 @@ create table properties (
   updated_at timestamptz not null default now()
 );
 
-create table amenities (
+create table if not exists amenities (
   id uuid primary key default gen_random_uuid(),
   property_id uuid not null references properties(id) on delete cascade,
   name text not null,
   created_at timestamptz not null default now()
 );
 
-create table calendar_blocks (
+create table if not exists calendar_blocks (
   id uuid primary key default gen_random_uuid(),
   property_id uuid not null references properties(id) on delete restrict,
   blocked_during daterange not null,
@@ -53,7 +57,7 @@ create table calendar_blocks (
   check (not isempty(blocked_during))
 );
 
-create table reservations (
+create table if not exists reservations (
   id uuid primary key default gen_random_uuid(),
   reference text not null unique,
   property_id uuid not null references properties(id) on delete restrict,
@@ -96,11 +100,14 @@ create table reservations (
   ) where (status in ('pending_payment', 'confirmed'))
 );
 
-create index reservations_status_hold_idx on reservations (hold_expires_at) where status = 'pending_payment';
-create index calendar_blocks_property_idx on calendar_blocks using gist (property_id, blocked_during);
+create index if not exists reservations_status_hold_idx on reservations (hold_expires_at) where status = 'pending_payment';
+create index if not exists calendar_blocks_property_idx on calendar_blocks using gist (property_id, blocked_during);
 
+drop trigger if exists properties_updated_at on properties;
 create trigger properties_updated_at before update on properties for each row execute function set_updated_at();
+drop trigger if exists calendar_blocks_updated_at on calendar_blocks;
 create trigger calendar_blocks_updated_at before update on calendar_blocks for each row execute function set_updated_at();
+drop trigger if exists reservations_updated_at on reservations;
 create trigger reservations_updated_at before update on reservations for each row execute function set_updated_at();
 
 -- Leniwe wygasanie (D063): wołać przed każdym odczytem dostępności i zapisem rezerwacji.
@@ -129,13 +136,20 @@ alter table amenities enable row level security;
 alter table calendar_blocks enable row level security;
 alter table reservations enable row level security;
 
+drop policy if exists admin_profiles_self on admin_profiles;
 create policy admin_profiles_self on admin_profiles for select to authenticated using (user_id = auth.uid());
 
+drop policy if exists properties_public_read on properties;
 create policy properties_public_read on properties for select to anon, authenticated using (true);
+drop policy if exists properties_admin_write on properties;
 create policy properties_admin_write on properties for all to authenticated using (is_admin()) with check (is_admin());
 
+drop policy if exists amenities_public_read on amenities;
 create policy amenities_public_read on amenities for select to anon, authenticated using (true);
+drop policy if exists amenities_admin_write on amenities;
 create policy amenities_admin_write on amenities for all to authenticated using (is_admin()) with check (is_admin());
 
+drop policy if exists calendar_blocks_admin on calendar_blocks;
 create policy calendar_blocks_admin on calendar_blocks for all to authenticated using (is_admin()) with check (is_admin());
+drop policy if exists reservations_admin on reservations;
 create policy reservations_admin on reservations for all to authenticated using (is_admin()) with check (is_admin());

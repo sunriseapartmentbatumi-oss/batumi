@@ -14,4 +14,5 @@ create index if not exists app_events_kind_idx on app_events (kind, created_at d
 alter table app_events enable row level security;
 
 -- Zapis tylko przez service_role (omija RLS); odczyt tylko dla administratorów.
+drop policy if exists app_events_admin_read on app_events;
 create policy app_events_admin_read on app_events for select to authenticated using (is_admin());
