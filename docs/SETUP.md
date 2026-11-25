@@ -163,6 +163,17 @@ Ulepszenia panelu (pulpit, filtry, szczegóły, CSV, kalendarz) nie wymagają no
 - **Uwaga:** Vercel uruchamia crony wyłącznie dla wdrożenia **Production**; na Preview/stagingu endpoint można sprawdzić ręcznie: `curl -H "Authorization: Bearer <CRON_SECRET>" <adres>/api/cron/przypomnienia`. Status ostatniego uruchomienia: `/admin/diagnostyka` (wymaga `app_events`).
 - Treść maila: dojazd, godziny zameldowania i kontakt to `[DO POTWIERDZENIA]` do czasu odpowiedzi Roberta.
 
+## 6h. Naprawa historii migracji (Supabase)
+
+Migracje były początkowo wklejane ręcznie w SQL Editor, więc `supabase_migrations.schema_migrations` na stagingu może być niepełna, a check GitHuba „Supabase Preview” może zgłaszać błąd. Przyczyny nie zgadujemy – potrzebny jest log (GitHub → PR/commit → check „Supabase Preview” → Details; Supabase → Database → Migrations) [DO POTWIERDZENIA: treść błędu od Konrada].
+
+1. Sprawdź: `select version, name from supabase_migrations.schema_migrations order by version;`
+2. Pliki w repo mają wersje: `20261124120000` (initial_schema), `20261124140000` (create_reservation_rpc), `20261124150000` (bootstrap_admin), `20261125100000` (app_events), `20261125120000` (reservation_reminder).
+3. Dla migracji **faktycznie zastosowanych** (a tylko dla nich) dopisz brakujące wiersze:
+   `insert into supabase_migrations.schema_migrations (version, name) values ('20261124120000','initial_schema') on conflict do nothing;` (analogicznie pozostałe; kolumny tabeli sprawdź w swojej wersji Supabase [DO POTWIERDZENIA]).
+4. Pliki migracji są powtarzalne (`if not exists`, `drop ... if exists` + `create`, `create or replace`, `on conflict do nothing`), więc ponowne uruchomienie przez integrację nie powinno kończyć się błędem „already exists”.
+5. Repo nie zawiera `supabase/config.toml`; jeśli integracja wymaga katalogu `supabase` w root repo – układ jest zgodny (`supabase/migrations`), a `project_id`/powiązanie gałęzi z projektem ustawia się w panelu integracji [DO POTWIERDZENIA].
+
 ## 7. Otwarte punkty
 
 D064 (pauzowanie Supabase), D066 (domena). Szczegóły: `docs/DECISIONS.md`.
