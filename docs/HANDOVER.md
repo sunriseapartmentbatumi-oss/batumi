@@ -22,5 +22,8 @@ Wklej Claude odpowiedzi przy numerach pytań (np. „6. Cena: … PLN za noc”)
 ## 5. Zatwierdzanie publikacji (produkcja)
 Publikacja = PR `staging` → `main`. Powiedz wprost w rozmowie z Claude: „Zatwierdzam publikację na produkcję (Robert)” i zmerguj PR w GitHub. Claude sam nigdy nie merguje ani nie publikuje (D033). Własna domena, płatne plany i konta – tylko po Twojej zgodzie (D034).
 
-## 6. Gdy coś nie działa
+## 6. Powiadomienia e-mail
+Nowa rezerwacja wysyła mail do właściciela przez Resend (konfiguracja: `docs/SETUP.md` §6e). Na razie dochodzi tylko na adres konta Resend; maile do gości wymagają własnej domeny (pytanie 23). Jeśli maila nie ma: spam, zakładka Emails w Resend, `/admin/diagnostyka`.
+
+## 7. Gdy coś nie działa
 Zaloguj się do `/admin/diagnostyka` na danym środowisku; błędy szczegółowe: Vercel → Logs, szukaj `[db-error]`. Konfiguracja środowisk i admina: `docs/SETUP.md`.
