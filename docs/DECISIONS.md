@@ -83,6 +83,7 @@
 | D074 | **Diagnostyka i logi:** błędy DB logowane strukturalnie (`[db-error]` itd., bez PII/sekretów), formularz zawsze pokazuje wynik, `/admin/diagnostyka` pokazuje stan konfiguracji (env tylko true/false). Lekcja: ogólny komunikat bez logów uniemożliwiał diagnozę; działanie na stagingu najpierw sprawdzaj w diagnostyce i logach Vercel. | Accepted | PR #9, #10 |
 | D075 | **Zasady współpracy PR:** wszystkie zmiany PR-em do `staging`; brak auto-merge, merge ręczny po zielonym CI; `main` chroniony (PR + recenzent + CI, D068); agenci nie mergują. Praca z dowolnym agentem AI (Claude, Copilot) wg `CLAUDE.md`; Robert nie zakłada dostępu do GitHub Copilot (`docs/HANDOVER.md`). | Accepted | Prośba użytkownika; D033, D068 |
 | D076 | Ochrona gałęzi w GitHub (wymagany recenzent/CI dla `main` i `staging`) – faktyczny stan ustawień do potwierdzenia przez Konrada. | Open | SETUP §2 |
+| D077 | **Mailing rezerwacyjny: Resend (bez Gmail SMTP); domena własna do ustalenia** (rozszerzenie, nazwa, właściciel/płatnik, dostęp do DNS – pytanie 23 w `stage-0/pytania_do_wlasciciela.md`). Do czasu weryfikacji domeny Resend wysyła tylko na adres konta. Zakup domeny wyłącznie po zgodzie Roberta (D034). | Open | Rozwija D050 |
 
 ## Guardrail
 Pole istniejące w schemacie nie jest równoznaczne z zatwierdzoną funkcją. Treść publiczna nie może prezentować jako obowiązującej reguły oznaczonej `Open`. Dla decyzji `Open` kod nie może wprowadzać reguły biznesowej poza neutralnym defaultem potrzebnym do działania schematu.
