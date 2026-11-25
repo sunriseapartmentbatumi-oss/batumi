@@ -34,6 +34,21 @@ Podział (D056): **Część A – Robert** (właściciel obiektu: oferta, ceny, 
 21. Materiały marki (logo, kolory, ton komunikacji).
 22. Preferowany język i długość raportów PDF.
 
+## DOMENA (WAŻNE)
+23. Domena własna dla strony i maili rezerwacyjnych (Resend – darmowy plan obsługuje do 3 domen; wymaga rekordów SPF/DKIM; bez własnej domeny Resend wysyła tylko na adres konta). Wybierz: rozszerzenie (.eu / .pl / .ge / .com / inna), proponowaną nazwę, kto jest właścicielem rejestracji i płatnikiem (D034: agenci niczego nie kupują) oraz kto ma dostęp do DNS (D050, B1).
+
+Orientacyjne ceny roczne **odnowienia** (źródła: oferty rejestratorów, październik–listopad 2026; **[DO POTWIERDZENIA]** u wybranego rejestratora przed zakupem):
+
+| Domena | Orientacyjna cena roczna | Uwagi |
+|---|---|---|
+| .eu | ok. 5–10 € (Porkbun ok. 5,3 €; OVHcloud ok. 10,3 € z VAT, ok. 41 zł netto) | wymaga rezydencji/obywatelstwa UE/EOG; promocje pierwszego roku mylące (np. Gandi 3,99 €, potem 30 €) |
+| .com | od ok. 10,9 $ (Spaceship, najtańsze odnowienie) do ok. 58 zł netto (OVHcloud) | najbardziej uniwersalna |
+| .pl | od 58,99 zł netto (OVHcloud) do 240 zł netto (nazwa.pl); home.pl ok. 221 zł brutto | pierwszy rok często promocyjnie 0–20 zł – patrz cena odnowienia |
+| .ge | ok. 30 ₾ (CleanNet); Netim 28,5 $ | dostępna dla nierezydentów od 2018; wymagany paszport/nr rejestracyjny |
+| .com.ge | ok. 12 ₾ | jw. |
+
+Uwagi: porównuj cenę odnowienia, nie pierwszego roku. Wybór domeny wpływa na wysyłkę maili do gości (Resend, D077).
+
 ## Zamknięte
 - ~~Potwierdzenie stacku Next.js/Vercel/Supabase~~ – potwierdził Konrad, 2026-11-24 (D027).
 - ~~Tryb publikacji~~ – publikację robi Robert lub Konrad, potwierdzenie promptem, merge PR do `main` (D033, D068).

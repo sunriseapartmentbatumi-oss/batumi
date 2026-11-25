@@ -46,7 +46,7 @@ BOOKING_NOTIFY_EMAIL=
 BOOKING_FROM_EMAIL=
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` i `RESEND_API_KEY` są server-only; `BOOKING_*` są opcjonalne (bez nich e-mail jest pomijany). `.env.local` nie trafia do Git. Preview (staging) i Production mają oddzielne wartości (osobne projekty Supabase). Zmienne płatności (operator – D011, Open) i cron (nieużywany – D063) nie istnieją; dojdą dopiero z odpowiednimi decyzjami.
+`SUPABASE_SERVICE_ROLE_KEY` i `RESEND_API_KEY` są server-only; `BOOKING_*` i `RESEND_API_KEY` razem włączają powiadomienie e-mail o rezerwacji (bez któregokolwiek jest pomijane; `docs/SETUP.md` §6e). `.env.local` nie trafia do Git. Preview (staging) i Production mają oddzielne wartości (osobne projekty Supabase). Zmienne płatności (operator – D011, Open) i cron (nieużywany – D063) nie istnieją; dojdą dopiero z odpowiednimi decyzjami.
 
 ## CI
 ```bash
