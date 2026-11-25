@@ -32,6 +32,7 @@ export default async function BookingPage() {
         )}
       </section>
       <BookingForm />
+      <p><Link href="/rezerwacja/status">Sprawdź status rezerwacji</Link></p>
       <p><Link href="/">Wróć na stronę główną</Link></p>
     </main>
   );

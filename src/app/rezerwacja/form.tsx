@@ -1,18 +1,30 @@
 "use client";
 import { useActionState } from "react";
 import { submitBooking, type BookingState } from "./actions";
+import Link from "next/link";
 import { TBC } from "@/lib/site";
+import { formatHold } from "@/lib/booking/status";
 
 const initial: BookingState = {};
 
 export function BookingForm() {
   const [state, action, pending] = useActionState(submitBooking, initial);
   if (state.ok) {
+    const sm = state.summary;
     return (
-      <p role="status">
-        Dziękujemy! Zgłoszenie <strong>{state.reference}</strong> zostało zapisane, termin jest wstępnie zablokowany na 15 minut.
-        Potwierdzenie i dalsze kroki: {TBC}.
-      </p>
+      <section role="status" aria-live="polite">
+        <h2>Dziękujemy – zgłoszenie zapisane</h2>
+        <p>Numer referencyjny: <strong>{state.reference}</strong> (zachowaj go; posłuży do sprawdzenia statusu).</p>
+        <p>Status: <strong>Oczekuje na potwierdzenie</strong></p>
+        {sm && (
+          <>
+            <p>Termin: {sm.check_in} – {sm.check_out}; dorośli: {sm.adults}, dzieci: {sm.children}</p>
+            <p>Termin jest wstępnie zablokowany do ok. {formatHold(sm.holdExpiresAt)}; po tym czasie blokada wygasa.</p>
+          </>
+        )}
+        <p>Cena, opłaty i dalsze kroki: {TBC}. Płatność online nie jest jeszcze dostępna.</p>
+        <p><Link href="/rezerwacja/status">Sprawdź status rezerwacji</Link></p>
+      </section>
     );
   }
   const v = (k: string, d = "") => state.values?.[k] ?? d;

@@ -138,6 +138,8 @@ Ograniczenia: bez zweryfikowanej własnej domeny Resend dostarcza tylko na adres
 
 Weryfikacja: złóż testową rezerwację na stagingu → sprawdź skrzynkę (także spam) → w Resend zakładka **Emails** (status dostarczenia) → w razie braku maila logi Vercel. Po zmianie zmiennych wymagany redeploy.
 
+Strona statusu gościa (`/rezerwacja/status`) nie wymaga nowej migracji ani zmiennych; korzysta z `SUPABASE_SERVICE_ROLE_KEY`. Test: złóż rezerwację, zapisz numer, sprawdź status z tym samym e-mailem oraz z błędnym (powinno być „nie znaleziono”).
+
 ## 7. Otwarte punkty
 
 D064 (pauzowanie Supabase), D066 (domena). Szczegóły: `docs/DECISIONS.md`.
