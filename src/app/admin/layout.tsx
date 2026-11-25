@@ -11,6 +11,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <nav>
         <Link href="/admin">Panel</Link>
         <Link href="/admin/rezerwacje">Rezerwacje</Link>
+        <Link href="/admin/kalendarz">Kalendarz</Link>
         <Link href="/admin/blokady">Blokady</Link>
         <Link href="/admin/apartament">Apartament</Link>
         <Link href="/admin/diagnostyka">Diagnostyka</Link>

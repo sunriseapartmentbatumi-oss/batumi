@@ -15,7 +15,7 @@ Role: **Robert** – właściciel obiektu, decyzje biznesowe, dane oferty, zgoda
 5. Sekrety nigdy w repo (D057); `.env.local` lokalnie. `SUPABASE_SERVICE_ROLE_KEY` tylko serwer. PII gości nie trafia do logów.
 6. Przepływ: nowa gałąź od `staging` → PR do `staging` (D068, D075). Zmiany schematu = **nowy** plik w `supabase/migrations` (nie edytuj istniejących); migracje stosuje człowiek ręcznie (D072).
 7. Przed PR: `npm run lint && npm run typecheck && npm run test && npm run build`.
-8. Zmiana decyzji/architektury = aktualizacja `docs/DECISIONS.md` (nowe ID od D080; istniejących nie zmieniaj).
+8. Zmiana decyzji/architektury = aktualizacja `docs/DECISIONS.md` (nowe ID od D081; istniejących nie zmieniaj).
 
 ## Mapa dokumentów (hierarchia)
 `docs/PRODUCT.md` → `docs/REQUIREMENTS.md` → `docs/ARCHITECTURE.md` → `docs/DATA-MODEL.md` → `docs/DECISIONS.md`. Operacyjne: `docs/SETUP.md` (runbook środowisk, migracje, admin), `docs/PROCESS.md`, `docs/SEO-CONTENT.md`, `docs/HANDOVER.md` (jak Robert pracuje z Claude), `docs/stage-0/` (pytania do Roberta, rejestr faktów, ryzyka).

@@ -75,6 +75,7 @@ Stan implementacji: `expire_stale_reservations()` jest wywoływana przed utworze
 
 ## 6a. Stan implementacji (2026-11-24)
 - Publiczne: `/`, `/rezerwacja` (formularz bez płatności, server action + zod, zapis przez `service_role` tylko serwerowo), `sitemap.xml`, `robots.txt` (indeksacja tylko `VERCEL_ENV=production`), baner STAGING poza produkcją.
+- Admin (D080): pulpit z licznikami statusów i przyjazdami/wyjazdami (14 dni), lista rezerwacji z filtrami (status, zakres dat, szukanie po numerze/nazwisku/e-mailu), szczegóły `/admin/rezerwacje/[id]`, eksport CSV `/admin/rezerwacje/export` (prefiks `'` przed `=`,`+`,`-`,`@`), kalendarz miesięczny `/admin/kalendarz` (rezerwacje + blokady, własny kod). Bez migracji; wszystko przez sesję admina i RLS.
 - Admin: `/admin` (Supabase Auth, `admin_profiles`/`is_admin()`, middleware + `requireAdmin()`), apartament i udogodnienia, rezerwacje (zmiana statusu wg dozwolonych przejść), blokady, `/admin/diagnostyka`. Zapisy admina idą przez sesję użytkownika i RLS, nie przez `service_role`.
 - Migracje: `initial_schema`, `create_reservation_rpc`, `bootstrap_admin`. Typy: `src/types/database.ts` (ręcznie utrzymywane).
 - Gość: po wysłaniu formularza potwierdzenie (numer `BAT-XXXXXXXX`, status „oczekuje na potwierdzenie”, koniec blokady, podsumowanie); `/rezerwacja/status` – sprawdzenie po numerze + e-mailu przez server action (service_role tylko serwerowo, jednolity komunikat „nie znaleziono”, limiter 10 prób/10 min/IP w pamięci instancji – best effort, `noindex`).

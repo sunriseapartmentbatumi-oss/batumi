@@ -24,6 +24,8 @@ Publikacja = PR `staging` → `main`. Powiedz wprost w rozmowie z Claude: „Zat
 
 Gość widzi potwierdzenie z numerem rezerwacji i może sprawdzić status na `/rezerwacja/status` (numer + e-mail). Ceny i zasady to nadal `[DO POTWIERDZENIA]`.
 
+W panelu `/admin`: pulpit (liczniki, najbliższe przyjazdy/wyjazdy), Rezerwacje (filtry, szczegóły, „Pobierz CSV”), Kalendarz (rezerwacje i blokady).
+
 ## 6. Powiadomienia e-mail
 Nowa rezerwacja wysyła mail do właściciela przez Resend (konfiguracja: `docs/SETUP.md` §6e). Na razie dochodzi tylko na adres konta Resend; maile do gości wymagają własnej domeny (pytanie 23). Jeśli maila nie ma: spam, zakładka Emails w Resend, `/admin/diagnostyka`.
 
