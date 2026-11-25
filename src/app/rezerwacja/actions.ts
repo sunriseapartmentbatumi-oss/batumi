@@ -7,6 +7,7 @@ import { logDbError, userMessage } from "@/lib/diagnostics";
 export type BookingState = {
   ok?: boolean;
   reference?: string;
+  summary?: { check_in: string; check_out: string; adults: number; children: number; holdExpiresAt: string };
   error?: string;
   fieldErrors?: Record<string, string>;
   values?: Record<string, string>;
@@ -44,6 +45,7 @@ async function handle(_prev: BookingState, formData: FormData): Promise<BookingS
 
   const v = parsed.data;
   const reference = makeReference();
+  const holdExpiresAt = new Date(Date.now() + HOLD_MINUTES * 60_000).toISOString();
   const { error } = await db.rpc("create_pending_reservation", {
     p_reference: reference,
     p_check_in: v.check_in,
@@ -67,7 +69,7 @@ async function handle(_prev: BookingState, formData: FormData): Promise<BookingS
     `Nowa rezerwacja ${reference}`,
     `${v.first_name} ${v.last_name}, ${v.email}, ${v.phone}\n${v.check_in} – ${v.check_out}, dorośli: ${v.adults}, dzieci: ${v.children}`,
   );
-  return { ok: true, reference };
+  return { ok: true, reference, summary: { check_in: v.check_in, check_out: v.check_out, adults: v.adults, children: v.children, holdExpiresAt } };
 }
 
 export async function submitBooking(prev: BookingState, formData: FormData): Promise<BookingState> {
