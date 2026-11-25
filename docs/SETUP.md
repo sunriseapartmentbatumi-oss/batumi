@@ -128,6 +128,7 @@ Dodatkowo `/admin/diagnostyka` zawiera: przycisk „Wyślij testowy e-mail” (w
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Vercel Production i Preview (osobno) | publiczne; ustawiają, z którą bazą łączy się środowisko |
 | `SUPABASE_SERVICE_ROLE_KEY` | Vercel Production i Preview (osobno) | **tylko serwer**, bez `NEXT_PUBLIC_`; używany wyłącznie przez formularz rezerwacji |
 | `NEXT_PUBLIC_APP_URL` | Vercel | bazowy adres (sitemap) |
+| `GUEST_EMAIL_ENABLED` | Vercel (opcjonalnie) | `true` włącza potwierdzenia dla gości; domyślnie wyłączone; działa tylko z `BOOKING_FROM_EMAIL` z własnej zweryfikowanej domeny (D082) |
 | `RESEND_API_KEY`, `BOOKING_NOTIFY_EMAIL`, `BOOKING_FROM_EMAIL` | Vercel Production i Preview (obecnie te same wartości) | wszystkie trzy wymagane do wysyłki, bez któregokolwiek e-mail jest pomijany; `BOOKING_FROM_EMAIL` w formacie `Nazwa <adres>` |
 
 Po zmianie zmiennych w Vercel wymagany jest redeploy. Brak zmiennych płatności i cron (D011 Open, D063).
@@ -138,13 +139,20 @@ Stan (D078): konto Resend założył Konrad; w Vercelu ustawione `RESEND_API_KEY
 
 Działanie: po utworzeniu rezerwacji `notifyByEmail` (`src/lib/booking/server.ts`) wysyła jedno powiadomienie do właściciela przez API Resend (fetch, bez biblioteki). Błąd maila nie blokuje rezerwacji; bez wszystkich trzech zmiennych nic nie jest wysyłane.
 
-Ograniczenia: bez zweryfikowanej własnej domeny Resend dostarcza tylko na adres konta Resend. Maile do gości (potwierdzenia) **nie są zaimplementowane**; wymagają domeny z SPF/DKIM (D077, pytanie 23 do Roberta).
+Ograniczenia: bez zweryfikowanej własnej domeny Resend dostarcza tylko na adres konta Resend. Mail potwierdzenia dla gościa jest **zaimplementowany, ale wyłączony** (D082): włącza go `GUEST_EMAIL_ENABLED=true`, tylko gdy `BOOKING_FROM_EMAIL` jest z własnej domeny (nie `resend.dev`); do tego czasu nic do gości nie wychodzi. Wymaga domeny z SPF/DKIM i wymagają domeny z SPF/DKIM (D077, pytanie 23 do Roberta).
 
 Weryfikacja: złóż testową rezerwację na stagingu → sprawdź skrzynkę (także spam) → w Resend zakładka **Emails** (status dostarczenia) → w razie braku maila logi Vercel. Po zmianie zmiennych wymagany redeploy.
 
 Strona statusu gościa (`/rezerwacja/status`) nie wymaga nowej migracji ani zmiennych; korzysta z `SUPABASE_SERVICE_ROLE_KEY`. Test: złóż rezerwację, zapisz numer, sprawdź status z tym samym e-mailem oraz z błędnym (powinno być „nie znaleziono”).
 
 Ulepszenia panelu (pulpit, filtry, szczegóły, CSV, kalendarz) nie wymagają nowej migracji. Nie ma jeszcze historii statusów ani notatek do zmian statusu – wymagałyby nowej migracji (nowa tabela/kolumna; Konrad wkleiłby ją w SQL Editor stagingu).
+
+## 6f. Kopia zapasowa danych (D082)
+
+- **Z panelu:** `/admin/kopia` – pełna kopia JSON (rezerwacje, blokady, apartament, udogodnienia) i CSV poszczególnych tabel (admin-only; CSV z ochroną przed formułami). Plik zawiera dane osobowe gości – trzymaj go bezpiecznie.
+- **Częstotliwość (zalecenie):** raz w tygodniu oraz przed każdą migracją/większą zmianą; wersja produkcyjna po pierwszych realnych rezerwacjach – częściej.
+- **Supabase:** plan Free nie daje automatycznych kopii z odtwarzaniem [DO POTWIERDZENIA aktualne limity planu w dashboardzie Supabase]; pełny zrzut bazy: `pg_dump` z connection string (Dashboard → Database) lub eksport z dashboardu. Eksport z panelu nie obejmuje użytkowników Auth ani funkcji/migracji (te są w repo).
+- **Odtwarzanie:** dane z JSON/CSV importuje człowiek ręcznie (SQL Editor / Table Editor); nie ma automatycznego importu.
 
 ## 7. Otwarte punkty
 

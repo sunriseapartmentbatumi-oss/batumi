@@ -6,6 +6,7 @@ vi.mock("server-only", () => ({}));
 vi.mock("next/headers", () => ({ headers: async () => new Headers({ "x-forwarded-for": "9.9.9.9" }) }));
 vi.mock("@/lib/booking/server", () => ({
   notifyByEmail: vi.fn(async () => ({ sent: true, reason: "ok" })),
+  sendGuestEmail: vi.fn(async () => ({ sent: true, reason: "ok" })),
   serverClient: () => ({
     rpc: async (_fn: string, a: Record<string, unknown>) => {
       store.push({

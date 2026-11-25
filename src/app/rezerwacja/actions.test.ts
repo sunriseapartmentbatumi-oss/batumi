@@ -7,6 +7,7 @@ vi.mock("next/headers", () => ({ headers: async () => new Headers({ "x-forwarded
 vi.mock("@/lib/booking/server", () => ({
   serverClient: () => ({ rpc }),
   notifyByEmail: vi.fn(async () => ({ sent: true, reason: "ok" })),
+  sendGuestEmail: vi.fn(async () => ({ sent: true, reason: "ok" })),
 }));
 
 import { submitBooking } from "./actions";
